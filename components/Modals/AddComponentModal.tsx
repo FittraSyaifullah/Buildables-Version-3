@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { X, Plus, Hammer, Package } from 'lucide-react';
 
@@ -12,6 +13,7 @@ interface AddComponentModalProps {
     mpn?: string;
     unitCost?: string;
     leadTime?: string;
+    notes?: string;
   }) => void;
 }
 
@@ -19,6 +21,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ onClose, o
   const [sourcing, setSourcing] = useState<'custom_manufactured' | 'off_the_shelf'>('custom_manufactured');
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
+  const [notes, setNotes] = useState('');
   
   // Custom fields
   const [specs, setSpecs] = useState('');
@@ -39,7 +42,8 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ onClose, o
       supplier: sourcing === 'off_the_shelf' ? supplier : undefined,
       mpn: sourcing === 'off_the_shelf' ? mpn : undefined,
       unitCost: sourcing === 'off_the_shelf' ? unitCost : undefined,
-      leadTime: sourcing === 'off_the_shelf' ? leadTime : undefined
+      leadTime: sourcing === 'off_the_shelf' ? leadTime : undefined,
+      notes: notes.trim() ? notes : undefined
     });
     onClose();
   };
@@ -117,7 +121,10 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ onClose, o
               />
             </div>
           ) : (
-            <div className="space-y-4 animate-in slide-in-from-top-2 duration-200">
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-4 animate-in slide-in-from-top-2">
+              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-gray-200 pb-2 flex items-center gap-2">
+                <Package size={12}/> Procurement Details
+              </h4>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Supplier</label>
@@ -125,46 +132,59 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ onClose, o
                       required 
                       value={supplier} 
                       onChange={e => setSupplier(e.target.value)} 
-                      className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" 
+                      className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all bg-white" 
                       placeholder="e.g. DigiKey" 
                   />
                 </div>
                 <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">MPN</label>
+                    <input 
+                        required 
+                        value={mpn} 
+                        onChange={e => setMpn(e.target.value)} 
+                        className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all bg-white" 
+                        placeholder="e.g. 17HS4401" 
+                    />
+                 </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Unit Cost</label>
                   <input 
                       required 
                       value={unitCost} 
                       onChange={e => setUnitCost(e.target.value)} 
-                      className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" 
+                      className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all bg-white" 
                       placeholder="e.g. $12.50" 
                   />
                 </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                 <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">MPN (Part Number)</label>
-                    <input 
-                        required 
-                        value={mpn} 
-                        onChange={e => setMpn(e.target.value)} 
-                        className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" 
-                        placeholder="e.g. 17HS4401" 
-                    />
-                 </div>
                  <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Lead Time</label>
                     <input 
                         required 
                         value={leadTime} 
                         onChange={e => setLeadTime(e.target.value)} 
-                        className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" 
+                        className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all bg-white" 
                         placeholder="e.g. 3 days" 
                     />
                  </div>
               </div>
             </div>
           )}
+
+          <div>
+             <label className="block text-xs font-bold text-gray-500 uppercase mb-1 flex items-center gap-1">
+                Rationale / Notes <span className="text-gray-400 font-normal lowercase">(optional)</span>
+             </label>
+             <textarea 
+                  value={notes} 
+                  onChange={e => setNotes(e.target.value)} 
+                  className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all resize-none" 
+                  rows={2} 
+                  placeholder="Why was this component selected?" 
+              />
+          </div>
 
           <button 
             type="submit" 

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { CadConceptData } from '../../types';
 import { Box, Layers, MousePointer2, Move3d, RotateCcw, Share2, Maximize2, Settings, Info, BoxSelect, Cpu, Leaf, Tag, Wand2, Ruler, Weight, Hammer, Package, Clock, DollarSign, Database, Plus } from 'lucide-react';
@@ -22,12 +23,14 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
     mpn?: string;
     unitCost?: string;
     leadTime?: string;
+    notes?: string;
   }) => {
     if (details.sourcing === 'custom_manufactured') {
       onAction?.(`Add a new 'custom_manufactured' component to the concept.
         Name: ${details.name}
         Category: ${details.category}
-        Specs: ${details.specs}`);
+        Specs: ${details.specs}
+        Rationale/Notes: ${details.notes || 'None'}`);
     } else {
       onAction?.(`Add a new 'off_the_shelf' component to the concept.
         Name: ${details.name}
@@ -35,7 +38,8 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
         Supplier: ${details.supplier}
         MPN: ${details.mpn}
         Unit Cost: ${details.unitCost}
-        Lead Time: ${details.leadTime}`);
+        Lead Time: ${details.leadTime}
+        Rationale/Notes: ${details.notes || 'None'}`);
     }
   };
 
@@ -203,42 +207,39 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
 
                             {/* Off The Shelf Specific Detail Block */}
                             {comp.sourcing === 'off_the_shelf' && (
-                                <div className="mt-2 mb-3 bg-blue-50/50 rounded-md p-2 border border-blue-100 text-xs">
-                                    <div className="grid grid-cols-2 gap-2 mb-2">
+                                <div className="mt-3 bg-white border border-gray-200 rounded-lg p-3 text-xs shadow-sm">
+                                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 border-b border-gray-100 pb-1 flex items-center gap-2">
+                                        <Package size={10} /> Procurement Data
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-y-3 gap-x-4 mb-3">
                                         <div>
-                                            <span className="text-gray-400 text-[10px] uppercase font-bold block mb-0.5">Supplier</span>
+                                            <div className="text-gray-400 text-[10px] mb-0.5">Supplier</div>
                                             <div className="font-medium text-brand-darkBlue truncate" title={comp.supplier}>{comp.supplier || '-'}</div>
                                         </div>
                                         <div>
-                                            <span className="text-gray-400 text-[10px] uppercase font-bold block mb-0.5">MPN</span>
+                                            <div className="text-gray-400 text-[10px] mb-0.5">MPN</div>
                                             <div className="font-mono text-gray-600 truncate" title={comp.mpn}>{comp.mpn || '-'}</div>
                                         </div>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-2 border-t border-blue-100 pt-2">
                                         <div>
-                                            <span className="text-gray-400 text-[10px] uppercase font-bold flex items-center gap-1 mb-0.5">
-                                                <Clock size={10} /> Lead Time
-                                            </span>
-                                            <div className="text-gray-600 font-medium">{comp.leadTime || '-'}</div>
+                                            <div className="text-gray-400 text-[10px] mb-0.5">Unit Cost</div>
+                                            <div className="font-medium text-brand-darkBlue">{comp.unitCost || '-'}</div>
                                         </div>
                                         <div>
-                                            <span className="text-gray-400 text-[10px] uppercase font-bold flex items-center gap-1 mb-0.5">
-                                                <DollarSign size={10} /> Unit Cost
-                                            </span>
-                                            <div className="text-gray-600 font-medium">{comp.unitCost || '-'}</div>
+                                            <div className="text-gray-400 text-[10px] mb-0.5">Lead Time</div>
+                                            <div className="font-medium text-brand-darkBlue">{comp.leadTime || '-'}</div>
                                         </div>
                                     </div>
-                                    <div className="flex gap-2 mt-3">
+                                    <div className="flex gap-2">
                                         <button 
                                             onClick={() => onAction?.(`Update sourcing details (Supplier, MPN, Price, Lead Time) for '${comp.name}'`)}
-                                            className="flex-1 text-center py-1.5 bg-white border border-blue-200 text-brand-blue rounded hover:bg-blue-50 transition-colors text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-1"
+                                            className="flex-1 text-center py-1.5 bg-gray-50 border border-gray-200 text-gray-600 rounded hover:bg-gray-100 hover:text-brand-blue transition-colors text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-1"
                                         >
                                             <Settings size={10} />
-                                            Update
+                                            Edit
                                         </button>
                                         <button 
-                                            onClick={() => onOpenParametric && onOpenParametric(comp.name)}
-                                            className="flex-1 text-center py-1.5 bg-brand-blue text-white border border-brand-blue rounded hover:bg-blue-700 transition-colors text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-1"
+                                            onClick={() => onOpenParametric && onOpenParametric(comp.mpn || comp.name)}
+                                            className="flex-1 text-center py-1.5 bg-brand-lightBlue text-brand-blue border border-brand-lightBlue rounded hover:bg-blue-100 transition-colors text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-1"
                                         >
                                             <Database size={10} />
                                             Params
@@ -262,6 +263,15 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
                                             <span className="text-gray-600">{comp.specs}</span>
                                         </div>
                                     )}
+                                    <div className="pt-2">
+                                        <button 
+                                            onClick={() => onOpenParametric && onOpenParametric(comp.name)}
+                                            className="w-full py-1.5 bg-white border border-gray-200 text-gray-500 rounded hover:bg-gray-50 hover:text-brand-blue hover:border-brand-blue transition-colors text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-1"
+                                        >
+                                            <Database size={10} />
+                                            View Specs
+                                        </button>
+                                    </div>
                                 </div>
                             )}
 

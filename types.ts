@@ -1,3 +1,4 @@
+
 export type Role = 'user' | 'model';
 
 export type Pillar = 'concept' | 'sourcing' | 'copilot';
@@ -64,6 +65,21 @@ export interface ComparisonPart {
   manufacturer: string;
   specs: Record<string, string>;
   isReference?: boolean;
+}
+
+export interface LibraryPart {
+  id: string;
+  partNumber: string;
+  name: string;
+  manufacturer: string;
+  category: string;
+  description: string;
+  status: 'Active' | 'Obsolete' | 'Prototyping' | 'In Stock' | 'On Order';
+  stockCount: number;
+  location?: string;
+  lastUsed: string;
+  specs: Record<string, string>;
+  isFavorite?: boolean;
 }
 
 export interface CadConceptData {

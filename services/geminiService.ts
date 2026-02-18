@@ -35,7 +35,8 @@ export const sendMessageToGemini = async (
   history: { role: string; parts: { text: string }[] }[],
   newMessage: string,
   userContext?: UserContext | null,
-  activePillar: Pillar = 'copilot'
+  activePillar: Pillar = 'copilot',
+  imageBase64?: string | null
 ): Promise<LLMResponseParsed> => {
   if (!process.env.API_KEY) {
     throw new Error("API Key not found");
@@ -72,6 +73,14 @@ export const sendMessageToGemini = async (
       modeInstruction = "MODE: GENERAL COPILOT. Focus on design reviews, documentation, and answering engineering queries. Use 'DOCUMENT' artifacts for long-form text.";
       break;
   }
+  
+  const imageInstruction = imageBase64 ? `
+  **IMAGE ANALYSIS MODE:**
+  The user has provided an image. 
+  1. IDENTIFY: Precisely identify the component, tool, or diagram shown.
+  2. PURPOSE: Explain its function in a mechanical system.
+  3. ALTERNATIVES: Suggest 3 viable alternatives or modern equivalents if applicable.
+  ` : "";
 
   const systemInstruction = `
 You are Buildables v3, a specialized Engineering Copilot. 
@@ -80,6 +89,8 @@ Your goal is to assist mechanical engineers with design, sourcing, and documenta
 ${contextInstruction}
 
 ${modeInstruction}
+
+${imageInstruction}
 
 **CRITICAL INSTRUCTION FOR ARTIFACT GENERATION:**
 If the user asks for a specific deliverable, you MUST generate a JSON block inside your response wrapped in \`\`\`json \`\`\` containing "_isArtifact": true.
@@ -182,12 +193,30 @@ Maintain a professional, engineering-focused tone. Concise, precise, and helpful
 
   try {
     const model = 'gemini-3-flash-preview'; 
+    
+    // Construct parts array
+    let requestParts: any[] = [{ text: newMessage }];
+    
+    // Add image if present
+    if (imageBase64) {
+        // Strip data prefix if present (e.g. "data:image/jpeg;base64,")
+        const base64Data = imageBase64.split(',')[1];
+        const mimeType = imageBase64.split(';')[0].split(':')[1] || 'image/jpeg';
+        
+        requestParts.unshift({
+            inlineData: {
+                mimeType: mimeType,
+                data: base64Data
+            }
+        });
+    }
+
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: model,
       contents: [
         { role: 'user', parts: [{ text: systemInstruction }] }, 
         ...history.map(h => ({ role: h.role === 'user' ? 'user' : 'model', parts: h.parts })),
-        { role: 'user', parts: [{ text: newMessage }] }
+        { role: 'user', parts: requestParts }
       ],
       config: {
         temperature: 0.2, 
