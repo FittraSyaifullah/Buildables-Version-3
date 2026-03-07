@@ -15,9 +15,16 @@ interface AddComponentModalProps {
     leadTime?: string;
     notes?: string;
   }) => void;
+  title?: string;
+  submitLabel?: string;
 }
 
-export const AddComponentModal: React.FC<AddComponentModalProps> = ({ onClose, onAdd }) => {
+export const AddComponentModal: React.FC<AddComponentModalProps> = ({ 
+  onClose, 
+  onAdd, 
+  title = "Add Component",
+  submitLabel = "Add to Concept"
+}) => {
   const [sourcing, setSourcing] = useState<'custom_manufactured' | 'off_the_shelf'>('custom_manufactured');
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
@@ -52,7 +59,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ onClose, o
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-          <h3 className="font-bold text-brand-darkBlue">Add Component</h3>
+          <h3 className="font-bold text-brand-darkBlue">{title}</h3>
           <button onClick={onClose}><X size={20} className="text-gray-400 hover:text-gray-600" /></button>
         </div>
         
@@ -190,7 +197,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ onClose, o
             type="submit" 
             className="w-full py-2.5 bg-brand-blue text-white rounded-lg font-bold text-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-sm mt-2"
           >
-            <Plus size={16} /> Add to Concept
+            <Plus size={16} /> {submitLabel}
           </button>
         </form>
       </div>

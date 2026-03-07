@@ -8,7 +8,8 @@ export enum ArtifactType {
   CAD_CONCEPT = 'CAD_CONCEPT',
   DOCUMENT = 'DOCUMENT',
   REVIEW_NOTE = 'REVIEW_NOTE',
-  COMPONENT_DETAIL = 'COMPONENT_DETAIL'
+  COMPONENT_DETAIL = 'COMPONENT_DETAIL',
+  SAVED_BOM = 'SAVED_BOM'
 }
 
 export interface ArtifactData {
@@ -129,4 +130,13 @@ export interface ProjectSummary {
   pillar: Pillar;
   lastModified: number;
   preview: string;
+}
+
+export interface SavedBom {
+  id: string;
+  title: string;
+  projectId: string;
+  items: BomItem[];
+  createdAt: number;
+  totalCost: number;
 }

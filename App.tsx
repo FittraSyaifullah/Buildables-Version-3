@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Send, Paperclip, ChevronRight, X, PanelRightClose, PanelRightOpen, ArrowRight, Sparkles, FileText, XCircle, Box, Cpu, Shield, Layers, List, Search, AlertTriangle, DollarSign, Eye, Scale, Calculator, Plus, Wrench, Zap, Globe, Ruler, Camera, ImageIcon } from 'lucide-react';
 import { sendMessageToGemini } from './services/geminiService';
-import { Message, ArtifactData, ArtifactType, UserContext, Pillar, AppSettings, ProjectSummary, ComponentDetailData, ComparisonPart, LibraryPart } from './types';
+import { Message, ArtifactData, ArtifactType, UserContext, Pillar, AppSettings, ProjectSummary, ComponentDetailData, ComparisonPart, LibraryPart, SavedBom } from './types';
 import { BomView } from './components/Artifacts/BomView';
 import { CadView } from './components/Artifacts/CadView';
 import { DocumentView } from './components/Artifacts/DocumentView';
@@ -11,10 +11,13 @@ import { ParametricPartView } from './components/Artifacts/ParametricPartView';
 import { PartsLibrary } from './components/PartsLibrary';
 import { FindSimilarModal } from './components/Modals/FindSimilarModal';
 import { ComparePartsModal } from './components/Modals/ComparePartsModal';
+import { AddComponentModal } from './components/Modals/AddComponentModal';
 import { OnboardingModal } from './components/OnboardingModal';
 import { SettingsModal } from './components/SettingsModal';
 import { Dashboard } from './components/Dashboard';
 import { TutorialOverlay } from './components/TutorialOverlay';
+import { SavedBomsView } from './components/SavedBomsView';
+import Markdown from 'react-markdown';
 
 // Mock Data for Dashboard
 const MOCK_PROJECTS: ProjectSummary[] = [
@@ -104,13 +107,32 @@ const MOCK_GRIPPER_ARTIFACT: ArtifactData = {
       rationale: "Adding a custom actuator mount reduces play in the drive train and allows for modular motor swapping.",
       constraints: ["Material: Silicone/PLA", "Payload: 500g", "Actuation: Pneumatic/Cable"],
       components: [
-         { name: "Finger Module A", category: "Soft Body", sourcing: "custom_manufactured", specs: "Silicone Shore 40A, Cast" },
-         { name: "Finger Module B", category: "Soft Body", sourcing: "custom_manufactured", specs: "Silicone Shore 40A, Cast" },
-         { name: "Base Manifold", category: "Structural", sourcing: "custom_manufactured", specs: "PLA+, FDM Printed" },
+         { 
+             name: "Finger Module A", 
+             category: "Soft Body", 
+             sourcing: "custom_manufactured", 
+             specs: "Silicone Shore 40A, Cast" 
+         },
+         { 
+             name: "Finger Module B", 
+             category: "Soft Body", 
+             sourcing: "custom_manufactured", 
+             specs: "Silicone Shore 40A, Cast" 
+         },
+         { 
+             name: "Base Manifold", 
+             category: "Structural", 
+             sourcing: "custom_manufactured", 
+             specs: "PLA+, FDM Printed" 
+         },
          { 
              name: "Actuator Mount", 
              category: "Structural", 
-             sourcing: "custom_manufactured", 
+             sourcing: "off_the_shelf", 
+             mpn: "ALU-MNT-40",
+             supplier: "Misumi",
+             unitCost: "$12.50",
+             leadTime: "3 days",
              specs: "Anodized Aluminum, 5mm thickness, lightweight design",
              notes: "Newly added component"
          }
@@ -125,12 +147,27 @@ const MOCK_GRIPPER_ARTIFACT: ArtifactData = {
     }
 };
 
+const MOCK_SAVED_BOMS: SavedBom[] = [
+    {
+        id: 'bom-1',
+        title: 'Robotic Arm Final BOM',
+        projectId: '3',
+        createdAt: Date.now() - 86400000 * 2,
+        totalCost: 1245.50,
+        items: [
+            { id: '1', partNumber: '17HS4401', description: 'Stepper Motor', manufacturer: 'MotionKing', quantity: 6, unitPrice: 15.00, leadTime: '3 days', supplier: 'Direct' },
+            { id: '2', partNumber: 'STM32F405', description: 'MCU', manufacturer: 'ST', quantity: 1, unitPrice: 12.00, leadTime: '5 days', supplier: 'DigiKey' }
+        ]
+    }
+];
+
 const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentArtifact, setCurrentArtifact] = useState<ArtifactData | null>(null);
   const [isArtifactPanelOpen, setIsArtifactPanelOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [userContext, setUserContext] = useState<UserContext | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [showTutorial, setShowTutorial] = useState(false);
@@ -139,12 +176,16 @@ const App: React.FC = () => {
   
   // Library State
   const [libraryParts, setLibraryParts] = useState<LibraryPart[]>(MOCK_LIBRARY);
+  const [isAddLibraryPartOpen, setIsAddLibraryPartOpen] = useState(false);
+  
+  // BOMs State
+  const [savedBoms, setSavedBoms] = useState<SavedBom[]>(MOCK_SAVED_BOMS);
   
   // Image Search State
   const [imageAttachment, setImageAttachment] = useState<string | null>(null);
   
   // Navigation State
-  const [currentView, setCurrentView] = useState<'chat' | 'dashboard' | 'library'>('chat');
+  const [currentView, setCurrentView] = useState<'chat' | 'dashboard' | 'library' | 'saved-boms'>('chat');
   
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -558,6 +599,24 @@ const App: React.FC = () => {
       { id: 'compliance', label: 'Compliance', icon: <Shield size={18} />, color: 'bg-red-50 text-red-600', prompt: 'Check compliance requirements for' },
   ];
 
+  const handleAddLibraryPart = (details: any) => {
+    const newPart: LibraryPart = {
+        id: crypto.randomUUID(),
+        partNumber: details.mpn || `PN-${Math.floor(Math.random() * 10000)}`,
+        name: details.name,
+        manufacturer: details.supplier || 'Unknown',
+        category: details.category,
+        description: details.notes || '',
+        status: details.sourcing === 'off_the_shelf' ? 'In Stock' : 'Prototyping',
+        stockCount: 0,
+        lastUsed: 'Just now',
+        specs: details.specs ? { "Specs": details.specs } : {},
+        isFavorite: false
+    };
+    setLibraryParts(prev => [newPart, ...prev]);
+    setIsAddLibraryPartOpen(false);
+  };
+
   const renderMainView = () => {
       if (currentView === 'dashboard') {
           return (
@@ -575,6 +634,29 @@ const App: React.FC = () => {
                 parts={libraryParts}
                 onViewPart={handleViewLibraryPart}
                 onToggleFavorite={handleToggleFavorite}
+                onAddComponent={() => setIsAddLibraryPartOpen(true)}
+              />
+          );
+      }
+
+      if (currentView === 'saved-boms') {
+          return (
+              <SavedBomsView 
+                boms={savedBoms}
+                onOpenBom={(bom) => {
+                    // Logic to open BOM
+                    setCurrentArtifact({
+                        id: bom.id,
+                        type: ArtifactType.BOM,
+                        title: bom.title,
+                        content: { items: bom.items, totalCost: bom.totalCost }
+                    });
+                    setCurrentView('chat');
+                    setIsArtifactPanelOpen(true);
+                }}
+                onDeleteBom={(id) => {
+                    setSavedBoms(prev => prev.filter(b => b.id !== id));
+                }}
               />
           );
       }
@@ -632,10 +714,8 @@ const App: React.FC = () => {
                                     {msg.text}
                                 </div>
                             ) : (
-                                <div className="text-brand-darkBlue px-1 py-1 text-[15px] leading-relaxed">
-                                    {msg.text.split('\n').map((line, i) => (
-                                        <p key={i} className="mb-3 last:mb-0">{line}</p>
-                                    ))}
+                                <div className="text-brand-darkBlue px-1 py-1 text-[15px] leading-relaxed markdown-body">
+                                    <Markdown>{msg.text}</Markdown>
                                     {msg.relatedArtifactId && (
                                         <button 
                                             onClick={() => setIsArtifactPanelOpen(true)}
@@ -788,6 +868,15 @@ const App: React.FC = () => {
       />
 
       {/* Modals for Parametric Search Flow */}
+      {isAddLibraryPartOpen && (
+          <AddComponentModal 
+            onClose={() => setIsAddLibraryPartOpen(false)}
+            onAdd={handleAddLibraryPart}
+            title="Add Library Component"
+            submitLabel="Add to Library"
+          />
+      )}
+
       {parametricPartForModal && (
           <FindSimilarModal 
             part={parametricPartForModal} 
@@ -805,23 +894,39 @@ const App: React.FC = () => {
       )}
       
       <Sidebar 
-        onNewChat={() => handleNewChat(activePillar)} 
+        onNewChat={() => { handleNewChat(activePillar); setIsSidebarOpen(false); }} 
         activePillar={activePillar}
-        onPillarChange={(p) => { setActivePillar(p); setCurrentView('chat'); }}
+        onPillarChange={(p) => { setActivePillar(p); setCurrentView('chat'); setIsSidebarOpen(false); }}
         activeView={currentView}
-        onOpenDashboard={() => setCurrentView('dashboard')}
-        onOpenLibrary={() => setCurrentView('library')}
+        onOpenDashboard={() => { setCurrentView('dashboard'); setIsSidebarOpen(false); }}
+        onOpenLibrary={() => { setCurrentView('library'); setIsSidebarOpen(false); }}
+        onOpenSavedBoms={() => { setCurrentView('saved-boms'); setIsSidebarOpen(false); }}
         onOpenSettings={() => setIsSettingsOpen(true)}
         recentProjects={MOCK_PROJECTS}
-        onOpenProject={handleOpenProject}
+        onOpenProject={(id) => { handleOpenProject(id); setIsSidebarOpen(false); }}
+        isOpen={isSidebarOpen}
+        onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
       />
 
       {/* Main Content Area */}
-      <div className={`flex-1 flex flex-col h-full transition-all duration-300 relative ${isArtifactPanelOpen && currentView !== 'dashboard' && currentView !== 'library' ? 'w-1/2' : 'w-full'} ${currentView !== 'chat' && isArtifactPanelOpen ? 'md:pr-[45%]' : ''}`}>
+      <div className={`flex-1 flex flex-col h-full transition-all duration-300 relative ${isArtifactPanelOpen && currentView === 'chat' ? 'lg:w-1/2' : 'w-full'}`}>
         
         {/* Mobile Header */}
-        <div className="h-14 border-b border-gray-100 flex items-center justify-between px-4 md:hidden flex-shrink-0 bg-white">
-            <span className="font-bold text-brand-darkBlue">Buildables v3</span>
+        <div className="h-14 border-b border-gray-100 flex items-center justify-between px-4 md:hidden flex-shrink-0 bg-white sticky top-0 z-30">
+            <div className="flex items-center gap-2">
+                <button onClick={() => setIsSidebarOpen(true)} className="p-1.5 text-brand-darkBlue/70">
+                    <PanelRightOpen size={20} />
+                </button>
+                <span className="font-serif font-bold text-brand-darkBlue">Buildables</span>
+            </div>
+            {currentView === 'chat' && currentArtifact && (
+                <button 
+                    onClick={() => setIsArtifactPanelOpen(!isArtifactPanelOpen)}
+                    className={`p-1.5 rounded-lg ${isArtifactPanelOpen ? 'text-brand-blue bg-brand-lightBlue' : 'text-gray-400'}`}
+                >
+                    <Box size={20} />
+                </button>
+            )}
         </div>
 
         {renderMainView()}
