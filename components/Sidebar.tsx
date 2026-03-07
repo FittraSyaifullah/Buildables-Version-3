@@ -1,16 +1,17 @@
 
 import React, { useMemo } from 'react';
-import { MessageSquarePlus, Clock, Settings, BookOpen, Database, Cpu, LayoutGrid, Package, X } from 'lucide-react';
+import { MessageSquarePlus, Clock, Settings, BookOpen, Database, Cpu, LayoutGrid, Package, X, FileText } from 'lucide-react';
 import { Pillar, ProjectSummary } from '../types';
 
 interface SidebarProps {
   onNewChat: () => void;
   activePillar: Pillar;
   onPillarChange: (pillar: Pillar) => void;
-  activeView: 'chat' | 'dashboard' | 'library' | 'saved-boms';
+  activeView: 'chat' | 'dashboard' | 'library' | 'saved-boms' | 'documents';
   onOpenDashboard: () => void;
   onOpenLibrary: () => void;
   onOpenSavedBoms: () => void;
+  onOpenDocumentCenter: () => void;
   onOpenSettings: () => void;
   recentProjects: ProjectSummary[];
   onOpenProject: (id: string) => void;
@@ -26,6 +27,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenDashboard,
   onOpenLibrary,
   onOpenSavedBoms,
+  onOpenDocumentCenter,
   onOpenSettings,
   recentProjects,
   onOpenProject,
@@ -139,6 +141,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className={getViewButtonClass('saved-boms')}
               >
                   <Database size={18} strokeWidth={1.5} /> Saved BOMs
+              </button>
+              <button 
+                onClick={() => { onOpenDocumentCenter(); onToggle?.(); }}
+                className={getViewButtonClass('documents')}
+              >
+                  <FileText size={18} strokeWidth={1.5} /> Document Center
               </button>
           </div>
 

@@ -107,7 +107,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, c
 
         <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-2">
             <button onClick={onClose} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-200 rounded-lg">Cancel</button>
-            <button onClick={() => { onSave(settings); onClose(); }} className="px-4 py-2 text-sm bg-brand-blue text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+            <button onClick={() => { onSave(settings); onClose(); }} className="px-4 py-2 text-sm bg-brand-blue text-white rounded-lg hover:bg-brand-darkBlue flex items-center gap-2">
                 <Save size={16} /> Save Changes
             </button>
         </div>

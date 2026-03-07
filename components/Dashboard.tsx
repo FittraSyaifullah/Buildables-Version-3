@@ -12,7 +12,7 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({ projects, onOpenProject, onNewProject }) => {
   const getIcon = (pillar: Pillar) => {
     switch(pillar) {
-        case 'concept': return <Cpu size={20} className="text-purple-400"/>;
+        case 'concept': return <Cpu size={20} className="text-brand-blue"/>;
         case 'sourcing': return <Database size={20} className="text-brand-blue"/>;
         case 'copilot': return <BookOpen size={20} className="text-brand-orange"/>;
     }
@@ -42,15 +42,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ projects, onOpenProject, o
             <div className="flex gap-3 w-full md:w-auto overflow-x-auto pb-4 md:pb-0 scrollbar-hide">
                 <button 
                     onClick={() => onNewProject('concept')} 
-                    className="flex-shrink-0 flex items-center gap-2.5 px-6 py-3 bg-white border border-brand-blue/20 rounded-2xl text-sm font-semibold text-brand-darkBlue/80 hover:border-purple-300 hover:text-purple-600 hover:shadow-xl hover:-translate-y-0.5 transition-all shadow-sm"
+                    className="flex-shrink-0 flex items-center gap-2.5 px-6 py-3 bg-white border border-brand-blue/20 rounded-2xl text-sm font-semibold text-brand-darkBlue/80 hover:border-brand-blue hover:text-brand-blue hover:shadow-xl hover:-translate-y-0.5 transition-all shadow-sm"
                 >
-                    <Cpu size={18} className="text-purple-400" /> New Concept
+                    <Cpu size={18} className="text-brand-blue" /> New Concept
                 </button>
                  <button 
                     onClick={() => onNewProject('sourcing')} 
-                    className="flex-shrink-0 flex items-center gap-2.5 px-6 py-3 bg-white border border-brand-blue/20 rounded-2xl text-sm font-semibold text-brand-darkBlue/80 hover:border-brand-blue hover:text-brand-blue hover:shadow-xl hover:-translate-y-0.5 transition-all shadow-sm"
+                    className="flex-shrink-0 flex items-center gap-2.5 px-6 py-3 bg-white border border-brand-blue/20 rounded-2xl text-sm font-semibold text-brand-darkBlue/80 hover:border-brand-orange hover:text-brand-orange hover:shadow-xl hover:-translate-y-0.5 transition-all shadow-sm"
                 >
-                    <Database size={18} className="text-brand-blue" /> New BOM
+                    <Database size={18} className="text-brand-orange" /> New BOM
                 </button>
             </div>
         </div>

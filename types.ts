@@ -140,3 +140,15 @@ export interface SavedBom {
   createdAt: number;
   totalCost: number;
 }
+
+export interface LibraryDocument {
+  id: string;
+  title: string;
+  type: 'datasheet' | 'manual' | 'compliance' | 'report' | 'whitepaper';
+  format: 'PDF' | 'DOCX' | 'XLSX' | 'TXT';
+  size: string;
+  uploadedAt: number;
+  tags: string[];
+  linkedPartNumber?: string;
+  url: string;
+}

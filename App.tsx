@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Send, Paperclip, ChevronRight, X, PanelRightClose, PanelRightOpen, ArrowRight, Sparkles, FileText, XCircle, Box, Cpu, Shield, Layers, List, Search, AlertTriangle, DollarSign, Eye, Scale, Calculator, Plus, Wrench, Zap, Globe, Ruler, Camera, ImageIcon } from 'lucide-react';
 import { sendMessageToGemini } from './services/geminiService';
-import { Message, ArtifactData, ArtifactType, UserContext, Pillar, AppSettings, ProjectSummary, ComponentDetailData, ComparisonPart, LibraryPart, SavedBom } from './types';
+import { Message, ArtifactData, ArtifactType, UserContext, Pillar, AppSettings, ProjectSummary, ComponentDetailData, ComparisonPart, LibraryPart, SavedBom, LibraryDocument } from './types';
 import { BomView } from './components/Artifacts/BomView';
 import { CadView } from './components/Artifacts/CadView';
 import { DocumentView } from './components/Artifacts/DocumentView';
@@ -17,6 +17,7 @@ import { SettingsModal } from './components/SettingsModal';
 import { Dashboard } from './components/Dashboard';
 import { TutorialOverlay } from './components/TutorialOverlay';
 import { SavedBomsView } from './components/SavedBomsView';
+import { DocumentCenter } from './components/DocumentCenter';
 import Markdown from 'react-markdown';
 
 // Mock Data for Dashboard
@@ -93,6 +94,52 @@ const MOCK_LIBRARY: LibraryPart[] = [
         location: 'Bin F-01',
         lastUsed: 'Today',
         specs: { "Thread": "M3", "Length": "10mm", "Material": "SS304" }
+    }
+];
+
+const MOCK_DOCUMENTS: LibraryDocument[] = [
+    {
+        id: 'doc-1',
+        title: 'LM317 Datasheet - Texas Instruments',
+        type: 'datasheet',
+        format: 'PDF',
+        size: '1.2 MB',
+        uploadedAt: Date.now() - 172800000,
+        tags: ['Voltage Regulator', 'TI', 'Datasheet'],
+        linkedPartNumber: 'LM317AEMPX/NOPB',
+        url: '#'
+    },
+    {
+        id: 'doc-2',
+        title: 'NEMA 17 User Manual',
+        type: 'manual',
+        format: 'PDF',
+        size: '3.5 MB',
+        uploadedAt: Date.now() - 604800000,
+        tags: ['Stepper Motor', 'Manual', 'MotionKing'],
+        linkedPartNumber: '17HS4401',
+        url: '#'
+    },
+    {
+        id: 'doc-3',
+        title: 'RoHS Compliance Certificate - SKF',
+        type: 'compliance',
+        format: 'PDF',
+        size: '450 KB',
+        uploadedAt: Date.now() - 2592000000,
+        tags: ['Compliance', 'RoHS', 'Mechanical'],
+        linkedPartNumber: '608-2RS',
+        url: '#'
+    },
+    {
+        id: 'doc-4',
+        title: 'System Architecture Report v1.2',
+        type: 'report',
+        format: 'PDF',
+        size: '8.1 MB',
+        uploadedAt: Date.now() - 86400000,
+        tags: ['Architecture', 'Internal', 'Design'],
+        url: '#'
     }
 ];
 
@@ -181,11 +228,14 @@ const App: React.FC = () => {
   // BOMs State
   const [savedBoms, setSavedBoms] = useState<SavedBom[]>(MOCK_SAVED_BOMS);
   
+  // Documents State
+  const [libraryDocuments, setLibraryDocuments] = useState<LibraryDocument[]>(MOCK_DOCUMENTS);
+  
   // Image Search State
   const [imageAttachment, setImageAttachment] = useState<string | null>(null);
   
   // Navigation State
-  const [currentView, setCurrentView] = useState<'chat' | 'dashboard' | 'library' | 'saved-boms'>('chat');
+  const [currentView, setCurrentView] = useState<'chat' | 'dashboard' | 'library' | 'saved-boms' | 'documents'>('chat');
   
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -590,13 +640,13 @@ const App: React.FC = () => {
   };
 
   const tools = [
-      { id: 'img-search', label: 'Visual Search', icon: <Camera size={18} />, color: 'bg-indigo-50 text-indigo-600', prompt: '' },
-      { id: 'search', label: 'Web Search', icon: <Globe size={18} />, color: 'bg-blue-50 text-blue-600', prompt: 'Search the web for' },
-      { id: 'calc', label: 'Calculator', icon: <Calculator size={18} />, color: 'bg-orange-50 text-orange-600', prompt: 'Calculate the' },
-      { id: 'concept', label: 'Gen Concept', icon: <Box size={18} />, color: 'bg-purple-50 text-purple-600', prompt: 'Generate a CAD concept for' },
-      { id: 'bom', label: 'Extract BOM', icon: <List size={18} />, color: 'bg-green-50 text-green-600', prompt: 'Extract a Bill of Materials for' },
-      { id: 'specs', label: 'Verify Specs', icon: <Ruler size={18} />, color: 'bg-teal-50 text-teal-600', prompt: 'Verify the specifications for' },
-      { id: 'compliance', label: 'Compliance', icon: <Shield size={18} />, color: 'bg-red-50 text-red-600', prompt: 'Check compliance requirements for' },
+      { id: 'img-search', label: 'Visual Search', icon: <Camera size={18} />, color: 'bg-brand-blue/10 text-brand-blue', prompt: '' },
+      { id: 'search', label: 'Web Search', icon: <Globe size={18} />, color: 'bg-brand-blue/10 text-brand-blue', prompt: 'Search the web for' },
+      { id: 'calc', label: 'Calculator', icon: <Calculator size={18} />, color: 'bg-brand-orange/10 text-brand-orange', prompt: 'Calculate the' },
+      { id: 'concept', label: 'Gen Concept', icon: <Box size={18} />, color: 'bg-brand-blue/10 text-brand-blue', prompt: 'Generate a CAD concept for' },
+      { id: 'bom', label: 'Extract BOM', icon: <List size={18} />, color: 'bg-brand-orange/10 text-brand-orange', prompt: 'Extract a Bill of Materials for' },
+      { id: 'specs', label: 'Verify Specs', icon: <Ruler size={18} />, color: 'bg-brand-blue/10 text-brand-blue', prompt: 'Verify the specifications for' },
+      { id: 'compliance', label: 'Compliance', icon: <Shield size={18} />, color: 'bg-brand-orange/10 text-brand-orange', prompt: 'Check compliance requirements for' },
   ];
 
   const handleAddLibraryPart = (details: any) => {
@@ -656,6 +706,30 @@ const App: React.FC = () => {
                 }}
                 onDeleteBom={(id) => {
                     setSavedBoms(prev => prev.filter(b => b.id !== id));
+                }}
+              />
+          );
+      }
+
+      if (currentView === 'documents') {
+          return (
+              <DocumentCenter 
+                documents={libraryDocuments}
+                onDeleteDocument={(id) => {
+                    setLibraryDocuments(prev => prev.filter(d => d.id !== id));
+                }}
+                onUploadDocument={() => {
+                    const newDoc: LibraryDocument = {
+                        id: `doc-${Date.now()}`,
+                        title: 'New Technical Specification',
+                        type: 'report',
+                        format: 'PDF',
+                        size: '1.4 MB',
+                        uploadedAt: Date.now(),
+                        tags: ['New', 'Upload', 'Technical'],
+                        url: '#'
+                    };
+                    setLibraryDocuments(prev => [newDoc, ...prev]);
                 }}
               />
           );
@@ -901,6 +975,7 @@ const App: React.FC = () => {
         onOpenDashboard={() => { setCurrentView('dashboard'); setIsSidebarOpen(false); }}
         onOpenLibrary={() => { setCurrentView('library'); setIsSidebarOpen(false); }}
         onOpenSavedBoms={() => { setCurrentView('saved-boms'); setIsSidebarOpen(false); }}
+        onOpenDocumentCenter={() => { setCurrentView('documents'); setIsSidebarOpen(false); }}
         onOpenSettings={() => setIsSettingsOpen(true)}
         recentProjects={MOCK_PROJECTS}
         onOpenProject={(id) => { handleOpenProject(id); setIsSidebarOpen(false); }}

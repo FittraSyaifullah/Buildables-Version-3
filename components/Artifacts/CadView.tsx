@@ -117,7 +117,7 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
                 </div>
                 {/* Simulated markers */}
                 <div className="absolute -right-12 top-0 flex items-center gap-1 bg-[#172b4d] px-2 py-1 rounded text-[10px] text-white border border-[#253858]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Motor Mount
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-blue"></span> Motor Mount
                 </div>
                 <div className="absolute -left-8 bottom-0 flex items-center gap-1 bg-[#172b4d] px-2 py-1 rounded text-[10px] text-white border border-[#253858]">
                      <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span> Base Plate
@@ -135,7 +135,7 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
                         ECO RATING: 
                         <span className={`font-bold ${
                             data.metrics.sustainabilityRating === 'A' ? 'text-green-400' : 
-                            data.metrics.sustainabilityRating === 'B' ? 'text-blue-400' : 'text-yellow-400'
+                            data.metrics.sustainabilityRating === 'B' ? 'text-brand-blue' : 'text-yellow-400'
                         }`}>
                             {data.metrics.sustainabilityRating}
                         </span>
@@ -194,7 +194,7 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
                                         </span>
                                     )}
                                     {comp.sourcing === 'off_the_shelf' && (
-                                        <span className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100 font-medium flex items-center gap-0.5">
+                                        <span className="text-[10px] bg-brand-lightBlue text-brand-darkBlue px-1.5 py-0.5 rounded border border-brand-blue/20 font-medium flex items-center gap-0.5">
                                             <Package size={8} /> COTS
                                         </span>
                                     )}
@@ -239,7 +239,7 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
                                         </button>
                                         <button 
                                             onClick={() => onOpenParametric && onOpenParametric(comp.mpn || comp.name)}
-                                            className="flex-1 text-center py-1.5 bg-brand-lightBlue text-brand-blue border border-brand-lightBlue rounded hover:bg-blue-100 transition-colors text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-1"
+                                            className="flex-1 text-center py-1.5 bg-brand-lightBlue text-brand-blue border border-brand-lightBlue rounded hover:bg-brand-blue/20 transition-colors text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-1"
                                         >
                                             <Database size={10} />
                                             Params
@@ -334,7 +334,7 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
 
          {/* Footer Actions */}
          <div className="p-4 bg-white border-t border-gray-200">
-            <button className="w-full flex items-center justify-center gap-2 bg-brand-lightBlue text-brand-blue font-bold py-2 rounded-lg text-sm hover:bg-blue-100 transition-colors">
+            <button className="w-full flex items-center justify-center gap-2 bg-brand-lightBlue text-brand-blue font-bold py-2 rounded-lg text-sm hover:bg-brand-blue/20 transition-colors">
                 <Share2 size={16} /> Share Concept
             </button>
          </div>

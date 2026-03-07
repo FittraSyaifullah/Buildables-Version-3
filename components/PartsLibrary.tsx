@@ -33,9 +33,9 @@ export const PartsLibrary: React.FC<PartsLibraryProps> = ({ parts, onViewPart, o
 
   const getStatusColor = (status: LibraryPart['status']) => {
     switch (status) {
-      case 'Active': return 'bg-green-50 text-green-700 border-green-100';
+      case 'Active': return 'bg-emerald-50 text-emerald-700 border-emerald-100';
       case 'In Stock': return 'bg-brand-lightBlue text-brand-blue border-brand-blue/20';
-      case 'Prototyping': return 'bg-purple-50 text-purple-700 border-purple-100';
+      case 'Prototyping': return 'bg-brand-blue/10 text-brand-blue border-brand-blue/20';
       case 'Obsolete': return 'bg-red-50 text-red-700 border-red-100';
       case 'On Order': return 'bg-brand-orange/10 text-brand-orange border-brand-orange/20';
       default: return 'bg-gray-50 text-gray-700 border-gray-100';
