@@ -345,6 +345,7 @@ const App: React.FC = () => {
     setCurrentArtifact(null);
     setIsArtifactPanelOpen(false);
     setCurrentView('chat');
+    setIsSidebarOpen(false);
   };
 
   const handleOpenProject = (id: string) => {
@@ -682,29 +683,29 @@ const App: React.FC = () => {
                 {/* Chat Scroll Area */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar px-4 pt-4 pb-48">
                 {messages.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full max-w-3xl mx-auto text-center opacity-0 animate-fade-in px-4" style={{animation: 'fadeIn 0.5s forwards'}}>
-                        <div className="w-20 h-20 bg-white rounded-full mb-8 flex items-center justify-center shadow-float border border-brand-darkBlue/5">
-                            <span className="font-serif text-4xl font-bold text-brand-darkBlue tracking-tighter">B</span>
+                    <div className="flex flex-col items-center justify-center h-full max-w-2xl mx-auto text-center opacity-0 animate-fade-in" style={{animation: 'fadeIn 0.5s forwards'}}>
+                        <div className="w-16 h-16 bg-white rounded-2xl mb-6 flex items-center justify-center shadow-sm border border-brand-darkBlue/10">
+                            <span className="font-serif text-3xl font-bold text-brand-darkBlue">B</span>
                         </div>
-                        <h1 className="font-serif font-semibold text-5xl text-brand-darkBlue mb-6 tracking-tight leading-tight">
+                        <h1 className="font-serif font-medium text-3xl text-brand-darkBlue mb-4">
                             Buildables Workspace
                         </h1>
-                        <p className="text-gray-500 mb-12 max-w-lg text-lg font-light leading-relaxed">
-                            Your intelligent engineering copilot. Design concepts, source components, and run calculations with AI-powered precision.
+                        <p className="text-gray-500 mb-10 max-w-md text-lg font-light leading-relaxed">
+                            Locally hosted AI workspace that helps mechanical engineers design concepts, find parts, and run calculations.
                         </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl">
                             {getEmptyStateSuggestions().map((suggestion, idx) => (
                                 <button 
                                     key={idx}
                                     onClick={() => handleSendMessage(suggestion.prompt)} 
-                                    className="flex items-start gap-4 p-5 bg-white border border-brand-darkBlue/5 rounded-2xl text-left transition-all duration-300 hover:border-brand-blue/30 hover:shadow-float hover:-translate-y-1 group"
+                                    className="flex items-center gap-4 p-4 bg-white border border-brand-darkBlue/10 rounded-xl text-left transition-all hover:border-brand-darkBlue/30 hover:shadow-md hover:-translate-y-0.5 group"
                                 >
-                                    <div className="p-3 bg-brand-gray/50 rounded-xl text-brand-darkBlue group-hover:bg-brand-blue group-hover:text-white transition-colors duration-300 shadow-sm">
+                                    <div className="p-2.5 bg-brand-lightBlue/50 rounded-lg text-brand-darkBlue group-hover:bg-brand-darkBlue group-hover:text-white transition-colors">
                                         {suggestion.icon}
                                     </div>
-                                    <div className="flex-1 pt-1">
-                                        <div className="font-sans font-semibold text-brand-darkBlue text-sm mb-1.5 group-hover:text-brand-blue transition-colors">{suggestion.heading}</div>
-                                        <div className="text-xs text-gray-500 leading-relaxed font-light">{suggestion.prompt}</div>
+                                    <div className="flex-1">
+                                        <div className="font-serif font-medium text-brand-darkBlue text-sm mb-0.5">{suggestion.heading}</div>
+                                        <div className="text-xs text-gray-400 line-clamp-1">{suggestion.prompt}</div>
                                     </div>
                                 </button>
                             ))}
@@ -715,14 +716,14 @@ const App: React.FC = () => {
                     {messages.map((msg) => (
                         <div key={msg.id} className={`flex gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         {msg.role === 'model' && (
-                            <div className="w-8 h-8 rounded-full bg-white border border-brand-darkBlue/10 text-brand-darkBlue flex-shrink-0 flex items-center justify-center text-sm font-serif font-bold mt-1 shadow-sm">
+                            <div className="w-6 h-6 rounded bg-brand-orange text-white flex-shrink-0 flex items-center justify-center text-xs font-bold mt-1 shadow-sm">
                             B
                             </div>
                         )}
                         
                         <div className={`flex flex-col max-w-[85%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                             {msg.role === 'user' ? (
-                                <div className="bg-brand-gray/80 text-brand-darkBlue px-5 py-3.5 rounded-2xl rounded-tr-sm text-[15px] leading-relaxed font-sans shadow-sm border border-brand-darkBlue/5">
+                                <div className="bg-brand-darkBlue text-white px-5 py-3 rounded-2xl rounded-tr-sm text-[16px] leading-relaxed font-serif tracking-tight shadow-sm border border-brand-darkBlue/10">
                                     {msg.text}
                                 </div>
                             ) : (
@@ -731,11 +732,11 @@ const App: React.FC = () => {
                                     {msg.relatedArtifactId && (
                                         <button 
                                             onClick={() => setIsArtifactPanelOpen(true)}
-                                            className="mt-4 flex items-center gap-2.5 text-xs font-semibold text-brand-darkBlue hover:text-brand-blue bg-white px-4 py-2.5 rounded-xl border border-brand-darkBlue/10 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 group"
+                                            className="mt-3 flex items-center gap-2 text-xs font-bold text-brand-orange hover:text-brand-orange/80 bg-brand-orange/10 px-3 py-2 rounded-lg border border-brand-orange/20 transition-colors"
                                         >
-                                            <PanelRightOpen size={14} className="text-brand-blue" />
+                                            <PanelRightOpen size={14} />
                                             View Generated Artifact
-                                            <ArrowRight size={12} className="text-gray-400 group-hover:text-brand-blue transition-colors group-hover:translate-x-0.5" />
+                                            <ArrowRight size={12} />
                                         </button>
                                     )}
                                 </div>
@@ -745,11 +746,11 @@ const App: React.FC = () => {
                     ))}
                     {isLoading && (
                         <div className="flex gap-4">
-                            <div className="w-8 h-8 rounded-full bg-white border border-brand-darkBlue/10 text-brand-darkBlue flex-shrink-0 flex items-center justify-center text-sm font-serif font-bold mt-1 shadow-sm">B</div>
-                            <div className="flex items-center gap-1.5 mt-4">
-                                <div className="w-2 h-2 bg-brand-darkBlue/30 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
-                                <div className="w-2 h-2 bg-brand-darkBlue/30 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                                <div className="w-2 h-2 bg-brand-darkBlue/30 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+                            <div className="w-6 h-6 rounded bg-brand-orange text-white flex-shrink-0 flex items-center justify-center text-xs font-bold mt-1 shadow-sm">B</div>
+                            <div className="flex items-center gap-1 mt-3">
+                                <div className="w-2 h-2 bg-brand-orange/50 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+                                <div className="w-2 h-2 bg-brand-orange/50 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                                <div className="w-2 h-2 bg-brand-orange/50 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
                             </div>
                         </div>
                     )}
@@ -784,29 +785,29 @@ const App: React.FC = () => {
                             </div>
                         )}
 
-                        <div className="bg-white rounded-3xl shadow-float border border-brand-darkBlue/5 overflow-hidden transition-all focus-within:ring-2 focus-within:ring-brand-blue/20 focus-within:border-brand-blue/30 relative">
+                        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-brand-darkBlue/10 overflow-hidden transition-all focus-within:ring-2 focus-within:ring-brand-darkBlue/10 focus-within:border-brand-darkBlue/30 relative">
                              {/* Attachments Area */}
                             {(attachedFiles.length > 0 || imageAttachment) && (
                                 <div className="flex gap-2 p-3 pb-0 overflow-x-auto">
                                     {attachedFiles.map((file, i) => (
-                                        <div key={i} className="flex items-center gap-2 bg-brand-lightBlue/50 px-3 py-1.5 rounded-xl text-xs font-medium text-brand-darkBlue animate-in fade-in zoom-in duration-200 border border-brand-darkBlue/5">
-                                            <FileText size={12} className="text-brand-blue" />
+                                        <div key={i} className="flex items-center gap-2 bg-brand-lightBlue/30 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-700 animate-in fade-in zoom-in duration-200 border border-brand-darkBlue/10">
+                                            <FileText size={12} className="text-brand-darkBlue/50" />
                                             {file}
-                                            <button onClick={() => setAttachedFiles(prev => prev.filter(f => f !== file))} className="text-gray-400 hover:text-red-500 transition-colors">
+                                            <button onClick={() => setAttachedFiles(prev => prev.filter(f => f !== file))} className="text-gray-400 hover:text-red-500">
                                                 <XCircle size={14} />
                                             </button>
                                         </div>
                                     ))}
                                     {imageAttachment && (
                                         <div className="relative group animate-in fade-in zoom-in duration-200">
-                                            <div className="h-10 w-10 rounded-xl overflow-hidden border border-brand-darkBlue/10 shadow-sm">
+                                            <div className="h-10 w-10 rounded-lg overflow-hidden border border-gray-200">
                                                 <img src={imageAttachment} alt="Attached" className="h-full w-full object-cover" />
                                             </div>
                                             <button 
                                                 onClick={() => setImageAttachment(null)} 
-                                                className="absolute -top-1.5 -right-1.5 bg-white text-gray-500 hover:text-red-500 rounded-full p-0.5 shadow-sm border border-brand-darkBlue/10 transition-colors"
+                                                className="absolute -top-1 -right-1 bg-white text-gray-500 hover:text-red-500 rounded-full p-0.5 shadow-sm border border-gray-200"
                                             >
-                                                <X size={12} />
+                                                <X size={10} />
                                             </button>
                                         </div>
                                     )}
@@ -816,7 +817,7 @@ const App: React.FC = () => {
                             <div className="flex items-end p-2">
                                 <button 
                                     onClick={() => setIsToolMenuOpen(!isToolMenuOpen)}
-                                    className={`p-2.5 rounded-2xl transition-all mr-2 flex-shrink-0 ${isToolMenuOpen ? 'bg-brand-lightBlue text-brand-blue rotate-45' : 'text-gray-400 hover:bg-brand-gray hover:text-brand-darkBlue'}`}
+                                    className={`p-2.5 rounded-xl transition-all mr-2 flex-shrink-0 ${isToolMenuOpen ? 'bg-brand-lightBlue text-brand-darkBlue rotate-45' : 'text-gray-400 hover:bg-brand-lightBlue/50 hover:text-brand-darkBlue'}`}
                                     title="Add Tool / Action"
                                 >
                                     <Plus size={20} />
@@ -827,7 +828,7 @@ const App: React.FC = () => {
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={handleKeyDown}
                                     placeholder={`Ask Buildables to design, source, or analyze...`}
-                                    className="w-full max-h-40 py-3 px-2 resize-none outline-none text-[16px] bg-transparent custom-scrollbar text-brand-darkBlue placeholder-gray-400 font-sans leading-relaxed"
+                                    className="w-full max-h-40 py-3 px-2 resize-none outline-none text-[16px] bg-transparent custom-scrollbar text-brand-darkBlue placeholder-brand-darkBlue/30 font-serif leading-relaxed"
                                     rows={1}
                                     style={{ minHeight: '52px' }}
                                 />
@@ -835,7 +836,7 @@ const App: React.FC = () => {
                                 <div className="flex items-center gap-2 pb-1.5 pl-2">
                                     <button 
                                         onClick={handleFileUpload}
-                                        className="p-2 text-gray-400 hover:text-brand-darkBlue rounded-xl hover:bg-brand-gray transition-colors"
+                                        className="p-2 text-gray-400 hover:text-brand-darkBlue rounded-lg hover:bg-brand-lightBlue/30 transition-colors"
                                         title="Attach Context"
                                     >
                                         <Paperclip size={18} />
@@ -843,14 +844,14 @@ const App: React.FC = () => {
                                     <button 
                                         onClick={() => handleSendMessage()}
                                         disabled={(!input.trim() && attachedFiles.length === 0 && !imageAttachment) || isLoading}
-                                        className={`p-2 rounded-xl transition-all duration-200 ${input.trim() || attachedFiles.length > 0 || imageAttachment ? 'bg-brand-darkBlue text-white shadow-md hover:bg-brand-blue hover:shadow-lg hover:-translate-y-0.5' : 'bg-brand-gray text-gray-400'}`}
+                                        className={`p-2 rounded-lg transition-all duration-200 ${input.trim() || attachedFiles.length > 0 || imageAttachment ? 'bg-brand-orange text-white shadow-md hover:bg-brand-orange/90' : 'bg-brand-lightBlue/50 text-brand-darkBlue/30'}`}
                                     >
                                         <ArrowRight size={18} />
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <p className="text-center text-[11px] text-gray-400 mt-3 font-medium tracking-wide">Buildables v3 can make mistakes. Verify component specs.</p>
+                        <p className="text-center text-[10px] text-gray-400 mt-3 font-medium tracking-wide">Buildables v3 can make mistakes. Verify component specs.</p>
                     </div>
                 </div>
             </>
@@ -906,7 +907,7 @@ const App: React.FC = () => {
       )}
       
       <Sidebar 
-        onNewChat={() => { handleNewChat(); setIsSidebarOpen(false); }} 
+        onNewChat={handleNewChat} 
         activeView={currentView}
         onOpenDashboard={() => { setCurrentView('dashboard'); setIsSidebarOpen(false); }}
         onOpenWorkspace={() => { setCurrentView('workspace'); setIsSidebarOpen(false); }}
@@ -918,20 +919,20 @@ const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <div className={`flex-1 flex flex-col h-full transition-all duration-300 relative ${isArtifactPanelOpen && currentView === 'chat' ? 'lg:w-1/2' : 'w-full'}`}>
+      <div className={`flex flex-col h-full transition-all duration-300 relative min-w-0 ${isArtifactPanelOpen && currentArtifact?.type === ArtifactType.CAD_CONCEPT ? 'w-full md:w-[400px] flex-shrink-0' : 'flex-1'}`}>
         
         {/* Mobile Header */}
-        <div className="h-16 border-b border-brand-darkBlue/5 flex items-center justify-between px-4 md:hidden flex-shrink-0 bg-white/90 backdrop-blur-md sticky top-0 z-30 shadow-sm">
-            <div className="flex items-center gap-3">
-                <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-brand-darkBlue/70 hover:bg-brand-gray rounded-xl transition-colors">
+        <div className="h-14 border-b border-gray-100 flex items-center justify-between px-4 md:hidden flex-shrink-0 bg-white sticky top-0 z-30">
+            <div className="flex items-center gap-2">
+                <button onClick={() => setIsSidebarOpen(true)} className="p-1.5 text-brand-darkBlue/70">
                     <PanelRightOpen size={20} />
                 </button>
-                <span className="font-serif font-semibold text-lg text-brand-darkBlue tracking-tight">Buildables</span>
+                <span className="font-serif font-bold text-brand-darkBlue">Buildables</span>
             </div>
             {currentView === 'chat' && currentArtifact && (
                 <button 
                     onClick={() => setIsArtifactPanelOpen(!isArtifactPanelOpen)}
-                    className={`p-2 rounded-xl transition-colors ${isArtifactPanelOpen ? 'text-brand-blue bg-brand-blue/10' : 'text-gray-400 hover:bg-brand-gray hover:text-brand-darkBlue'}`}
+                    className={`p-1.5 rounded-lg ${isArtifactPanelOpen ? 'text-brand-darkBlue bg-brand-lightBlue' : 'text-gray-400'}`}
                 >
                     <Box size={20} />
                 </button>
@@ -942,7 +943,7 @@ const App: React.FC = () => {
         {!isSidebarOpen && (
             <button 
                 onClick={() => setIsSidebarOpen(true)}
-                className="hidden md:flex absolute top-6 left-6 z-20 bg-white/90 backdrop-blur-md border border-brand-darkBlue/10 shadow-float p-3 rounded-xl text-gray-500 hover:text-brand-blue hover:border-brand-blue/30 transition-all hover:-translate-y-0.5 hover:shadow-lg"
+                className="hidden md:flex absolute top-6 left-6 z-20 bg-white border border-gray-200 shadow-lg p-2.5 rounded-xl text-gray-500 hover:text-brand-darkBlue hover:border-brand-darkBlue transition-all"
                 title="Open Sidebar"
             >
                 <ChevronRight size={20} />
@@ -955,35 +956,35 @@ const App: React.FC = () => {
 
       {/* Right Artifact Panel */}
       {isArtifactPanelOpen && (
-        <div className={`fixed right-0 top-0 bottom-0 z-30 w-full md:w-[45%] h-full border-l border-brand-darkBlue/5 bg-white shadow-[-10px_0_40px_rgba(0,0,0,0.03)] flex flex-col animate-slide-in-right transform transition-transform duration-300`}>
-          <div className="h-16 border-b border-brand-darkBlue/5 flex items-center justify-between px-6 bg-white/80 backdrop-blur-md flex-shrink-0 z-10">
-            <div className="flex items-center gap-3.5">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-brand-blue bg-brand-blue/5 border border-brand-blue/10 px-2.5 py-1 rounded-md">
+        <div className={`fixed md:relative right-0 top-0 bottom-0 z-30 w-full ${currentArtifact?.type === ArtifactType.CAD_CONCEPT ? 'md:flex-1' : 'md:w-[45%] lg:w-[50%] flex-shrink-0'} h-full border-l border-gray-200 bg-white shadow-[-5px_0_30px_rgba(0,0,0,0.02)] flex flex-col animate-slide-in-right transform transition-transform duration-300`}>
+          <div className="h-14 border-b border-gray-100 flex items-center justify-between px-6 bg-white flex-shrink-0">
+            <div className="flex items-center gap-3">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 border border-gray-200 px-2 py-0.5 rounded">
                     {currentArtifact?.type || 'ARTIFACT'}
                 </span>
-                <span className="text-sm font-semibold text-brand-darkBlue truncate max-w-[200px] tracking-wide">
+                <span className="text-sm font-bold text-brand-darkBlue truncate max-w-[200px] font-serif">
                     {currentArtifact?.title}
                 </span>
             </div>
             <div className="flex items-center gap-1">
-                 <button onClick={() => setIsArtifactPanelOpen(false)} className="p-2.5 text-gray-400 hover:text-brand-darkBlue hover:bg-brand-gray rounded-xl transition-all" title="Close Panel">
+                 <button onClick={() => setIsArtifactPanelOpen(false)} className="p-2 text-gray-400 hover:text-brand-darkBlue hover:bg-gray-50 rounded-lg transition-colors" title="Close Panel">
                     <PanelRightClose size={18} />
                  </button>
             </div>
           </div>
           
-          <div className="flex-1 overflow-hidden relative bg-brand-gray/10">
+          <div className="flex-1 overflow-hidden relative">
             {renderArtifactContent()}
           </div>
         </div>
       )}
       
       {/* Toggle Button for panel if closed but artifact exists */}
-      {!isArtifactPanelOpen && currentArtifact && currentView === 'chat' && (
+      {!isArtifactPanelOpen && currentArtifact && (
           <div className="absolute top-6 right-6 z-20">
               <button 
                 onClick={() => setIsArtifactPanelOpen(true)}
-                className="bg-white/90 backdrop-blur-md border border-brand-darkBlue/10 shadow-float p-3 rounded-xl text-gray-500 hover:text-brand-blue hover:border-brand-blue/30 transition-all hover:-translate-y-0.5 hover:shadow-lg"
+                className="bg-white border border-gray-200 shadow-lg p-2.5 rounded-xl text-gray-500 hover:text-brand-darkBlue hover:border-brand-darkBlue transition-all"
               >
                   <PanelRightOpen size={20} />
               </button>
