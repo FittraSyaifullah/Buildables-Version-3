@@ -1,5 +1,5 @@
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
-import { ArtifactType, ArtifactData, LLMResponseParsed, UserContext, Pillar } from "../types";
+import { ArtifactType, ArtifactData, LLMResponseParsed, UserContext } from "../types";
 
 // Helper to extract JSON artifact from text if present
 const parseArtifactFromResponse = (text: string): LLMResponseParsed => {
@@ -35,7 +35,6 @@ export const sendMessageToGemini = async (
   history: { role: string; parts: { text: string }[] }[],
   newMessage: string,
   userContext?: UserContext | null,
-  activePillar: Pillar = 'copilot',
   imageBase64?: string | null
 ): Promise<LLMResponseParsed> => {
   if (!process.env.API_KEY) {
@@ -52,6 +51,7 @@ export const sendMessageToGemini = async (
   - **Product Lifecycle:** ${userContext.lifecycle}
   - **Industry Domain:** ${userContext.industry}
   - **Engineering Role:** ${userContext.role}
+  - **Project Knowledge:** ${userContext.projectKnowledge}
   
   *Tailoring Instructions:*
   - **Industry:** If "Medical", prioritize biocompatibility and ISO 13485. If "Aerospace", focus on weight/strength ratios and AS9100.
@@ -59,20 +59,14 @@ export const sendMessageToGemini = async (
   - **Resources:** Only suggest manufacturing methods available in their resource list.
   ` : '';
 
-  // Tailor the persona based on the active mode (Pillar)
-  let modeInstruction = "";
-  switch (activePillar) {
-    case 'concept':
-      modeInstruction = "MODE: CONCEPT FORMATION. Focus on creativity, topology optimization, and mechanical synthesis. Always default to generating 'CAD_CONCEPT' artifacts when a design is requested.";
-      break;
-    case 'sourcing':
-      modeInstruction = "MODE: SOURCING INTELLIGENCE. Focus on supply chain, lead times, cost reduction, and alternative parts. Always default to generating 'BOM' artifacts for lists of parts.";
-      break;
-    case 'copilot':
-    default:
-      modeInstruction = "MODE: GENERAL COPILOT. Focus on design reviews, documentation, and answering engineering queries. Use 'DOCUMENT' artifacts for long-form text.";
-      break;
-  }
+  const modeInstruction = `
+  MODE: UNIFIED ENGINEERING COPILOT. 
+  You are an expert mechanical engineer, supply chain manager, and design reviewer.
+  - When a user asks for a design or concept, generate a 'CAD_CONCEPT' artifact.
+  - When a user asks for a list of parts, pricing, or a BOM, generate a 'BOM' artifact.
+  - When a user asks for documentation, reports, or long-form text, generate a 'DOCUMENT' artifact.
+  - When a user asks for details on a specific component, generate a 'COMPONENT_DETAIL' artifact.
+  `;
   
   const imageInstruction = imageBase64 ? `
   **IMAGE ANALYSIS MODE:**

@@ -252,7 +252,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) 
             {step === 5 && (
               <div className="space-y-8 animate-in slide-in-from-right-8 fade-in duration-500">
                 <div>
-                  <span className="text-brand-orange font-bold tracking-widest uppercase text-xs mb-3 block">Step 5 of 5</span>
+                  <span className="text-brand-orange font-bold tracking-widest uppercase text-xs mb-3 block">Step 5 of 6</span>
                   <h2 className="text-3xl md:text-4xl font-serif font-medium text-brand-darkBlue tracking-tight">What is your engineering role?</h2>
                 </div>
                 <div className="grid grid-cols-1 gap-4">
@@ -277,6 +277,41 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) 
                         role === opt.id ? 'border-brand-darkBlue bg-brand-darkBlue' : 'border-gray-300'
                       }`}>
                           {role === opt.id && <div className="w-2 h-2 bg-white rounded-full" />}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {step === 6 && (
+              <div className="space-y-8 animate-in slide-in-from-right-8 fade-in duration-500">
+                <div>
+                  <span className="text-brand-orange font-bold tracking-widest uppercase text-xs mb-3 block">Step 6 of 6</span>
+                  <h2 className="text-3xl md:text-4xl font-serif font-medium text-brand-darkBlue tracking-tight">What is your project knowledge?</h2>
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                  {knowledgeOptions.map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setProjectKnowledge(opt.id)}
+                      className={`flex items-center p-6 rounded-2xl text-left transition-all duration-300 border-2 ${
+                        projectKnowledge === opt.id 
+                          ? 'border-brand-darkBlue bg-brand-lightBlue/30 shadow-md' 
+                          : 'border-gray-100 hover:border-brand-darkBlue/30 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className={`p-4 rounded-xl mr-6 transition-colors ${projectKnowledge === opt.id ? 'bg-brand-darkBlue text-white' : 'bg-gray-100 text-gray-500'}`}>
+                        {opt.icon}
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-bold text-brand-darkBlue text-lg mb-1">{opt.label}</div>
+                        <div className="text-sm text-gray-500 font-medium">{opt.desc}</div>
+                      </div>
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                        projectKnowledge === opt.id ? 'border-brand-darkBlue bg-brand-darkBlue' : 'border-gray-300'
+                      }`}>
+                          {projectKnowledge === opt.id && <div className="w-2 h-2 bg-white rounded-full" />}
                       </div>
                     </button>
                   ))}
