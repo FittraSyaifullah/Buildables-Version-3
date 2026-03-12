@@ -143,12 +143,17 @@ If the user asks for a specific deliverable, you MUST generate a JSON block insi
        "costEstimate": "$45.00",
        "sustainabilityRating": "B"
     },
-    "visualStyle": "shaded"
+    "visualStyle": "shaded",
+    "threeDModel": [
+      { "type": "box", "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1], "color": "#ff8800" },
+      { "type": "cylinder", "position": [0, 1, 0], "rotation": [0, 0, 0], "scale": [0.5, 2, 0.5], "color": "#444444" }
+    ]
   }
 }
 \`\`\`
 *Allowed 'sourcing' values:* 'verified_supplier', 'generic', 'reclaimed', 'custom_manufactured', 'off_the_shelf'.
 *Important:* For 'off_the_shelf' components, you MUST provide 'supplier', 'mpn', 'leadTime', and 'unitCost'.
+*Important:* 'threeDModel' is an array of primitives ('box', 'sphere', 'cylinder') that visually represent the concept. Provide a few primitives to give a rough 3D shape.
 
 3. **Document/Review:**
 \`\`\`json

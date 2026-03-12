@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UserContext } from '../types';
-import { ArrowRight, Check, Briefcase, Wrench, Layers, Factory, Globe, GraduationCap, Medal, Cpu, ChevronLeft, Sparkles } from 'lucide-react';
+import { ArrowRight, Check, Briefcase, Wrench, Layers, Factory, Globe, GraduationCap, Medal, Cpu, ChevronLeft, Sparkles, Database } from 'lucide-react';
 
 interface OnboardingModalProps {
   onComplete: (context: UserContext) => void;
@@ -13,8 +13,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) 
   const [lifecycle, setLifecycle] = useState('');
   const [industry, setIndustry] = useState('');
   const [role, setRole] = useState('');
+  const [projectKnowledge, setProjectKnowledge] = useState('');
 
-  const TOTAL_STEPS = 5;
+  const TOTAL_STEPS = 6;
 
   const workflows = [
     { id: 'rapid_proto', label: 'Rapid Prototyping', desc: 'Speed and iteration over perfection', icon: <Cpu size={24} /> },
@@ -51,6 +52,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) 
     { id: 'lead', label: 'Lead / Manager', desc: 'Focus on risk, cost, and system architecture', icon: <Medal size={24} /> },
   ];
 
+  const knowledgeOptions = [
+    { id: 'none', label: 'Starting from scratch', desc: 'No existing documentation or CAD files', icon: <Sparkles size={24} /> },
+    { id: 'some', label: 'Some existing files', desc: 'A few CAD models, PDFs, or datasheets', icon: <Layers size={24} /> },
+    { id: 'extensive', label: 'Extensive library', desc: 'Full PDM/PLM system, thousands of parts', icon: <Database size={24} /> },
+  ];
+
   const toggleResource = (res: string) => {
     setResources(prev => 
       prev.includes(res) ? prev.filter(r => r !== res) : [...prev, res]
@@ -67,6 +74,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) 
         lifecycle: lifecycles.find(l => l.id === lifecycle)?.label || lifecycle,
         industry: industries.find(i => i.id === industry)?.label || industry,
         role: roles.find(r => r.id === role)?.label || role,
+        projectKnowledge: knowledgeOptions.find(k => k.id === projectKnowledge)?.label || projectKnowledge,
       });
     }
   };
@@ -77,6 +85,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) 
     if (step === 3) return !!lifecycle;
     if (step === 4) return !!industry;
     if (step === 5) return !!role;
+    if (step === 6) return !!projectKnowledge;
     return false;
   };
 

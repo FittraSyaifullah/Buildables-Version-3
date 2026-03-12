@@ -4,9 +4,10 @@ import { ArrowRight, ChevronLeft, Cpu, Database, X, Sparkles, LayoutGrid, Packag
 
 interface TutorialOverlayProps {
   onComplete: () => void;
+  isSidebarOpen?: boolean;
 }
 
-export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete }) => {
+export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, isSidebarOpen = true }) => {
   const [step, setStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -16,11 +17,16 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete }) 
     return () => clearTimeout(timer);
   }, []);
 
+  const sidebarWidth = isSidebarOpen ? 288 : 80;
+  const beaconLeft = `${sidebarWidth / 2}px`;
+  const cardLeft = `${sidebarWidth + 22}px`; // 288 + 22 = 310, 80 + 22 = 102
+
   const steps = [
     {
       title: "Welcome to Buildables v3",
       desc: "Your AI-powered mechanical engineering companion. Let's take a quick tour to explore your new workspace features.",
       positionClass: "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
+      style: {},
       mobilePosition: "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
       arrow: null,
       icon: <Sparkles size={24} className="text-brand-orange" />,
@@ -29,43 +35,48 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete }) 
     {
       title: "Project Dashboard",
       desc: "Start here to view recent activity or create new projects from quick-start templates.",
-      positionClass: "top-[100px] left-[310px]",
+      positionClass: "top-[100px]",
+      style: { left: cardLeft },
       mobilePosition: "top-20 left-1/2 -translate-x-1/2",
       arrow: "left",
       icon: <LayoutGrid size={24} className="text-brand-orange" />,
-      beacon: { top: '135px', left: '144px' } 
+      beacon: { top: '135px', left: beaconLeft } 
     },
     {
       title: "Centralized Parts Library",
       desc: "Manage your organization's standard parts, track inventory levels, and access detailed specs instantly.",
-      positionClass: "top-[150px] left-[310px]",
+      positionClass: "top-[150px]",
+      style: { left: cardLeft },
       mobilePosition: "top-40 left-1/2 -translate-x-1/2",
       arrow: "left",
       icon: <Package size={24} className="text-brand-orange" />,
-      beacon: { top: '185px', left: '144px' } 
+      beacon: { top: '185px', left: beaconLeft } 
     },
     {
       title: "Engineering Modes",
       desc: "Switch context between 'Concept' for ideation, 'Sourcing' for supply chain optimization, and 'Copilot' for general tasks.",
-      positionClass: "top-[255px] left-[310px]",
+      positionClass: "top-[255px]",
+      style: { left: cardLeft },
       mobilePosition: "top-60 left-1/2 -translate-x-1/2",
       arrow: "left",
       icon: <Cpu size={24} className="text-brand-orange" />,
-      beacon: { top: '290px', left: '144px' } 
+      beacon: { top: '290px', left: beaconLeft } 
     },
     {
       title: "Smart Input & Tools",
       desc: "Use the '+' menu for specialized tools like Visual Search and Compliance checks. Attach files for context.",
-      positionClass: "bottom-[140px] left-[calc(50vw+144px)] -translate-x-1/2",
+      positionClass: "bottom-[140px] -translate-x-1/2",
+      style: { left: `calc(50vw + ${sidebarWidth/2}px)` },
       mobilePosition: "bottom-40 left-1/2 -translate-x-1/2",
       arrow: "down",
       icon: <Wrench size={24} className="text-brand-orange" />,
-      beacon: { bottom: '80px', left: 'calc(50vw + 144px)' } 
+      beacon: { bottom: '80px', left: `calc(50vw + ${sidebarWidth/2}px)` } 
     },
     {
       title: "Intelligent Artifacts",
       desc: "Generated CAD models, BOMs, and Documents appear here. You can interact with them, compare parts, and export data.",
       positionClass: "top-1/2 right-[100px] -translate-y-1/2",
+      style: {},
       mobilePosition: "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
       arrow: "right",
       icon: <Database size={24} className="text-brand-orange" />,
@@ -111,7 +122,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete }) 
   return (
     <div className={`fixed inset-0 z-[60] transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={handleClose} />
+      <div className="absolute inset-0 bg-brand-darkBlue/50 backdrop-blur-sm" onClick={handleClose} />
 
       {/* Beacon Animation (Desktop Only) */}
       {current.beacon && (
@@ -132,7 +143,10 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete }) 
       )}
 
       {/* Card Container (Desktop) */}
-      <div className={`absolute ${current.positionClass} transition-all duration-500 ease-in-out hidden md:block z-20`}>
+      <div 
+        className={`absolute ${current.positionClass} transition-all duration-500 ease-in-out hidden md:block z-20`}
+        style={current.style}
+      >
         <TutorialCard 
             step={step} 
             total={steps.length} 

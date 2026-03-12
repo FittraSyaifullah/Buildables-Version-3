@@ -191,7 +191,13 @@ const MOCK_GRIPPER_ARTIFACT: ArtifactData = {
          costEstimate: "$35.00",
          sustainabilityRating: "B"
       },
-      visualStyle: "shaded"
+      visualStyle: "shaded",
+      threeDModel: [
+        { type: "box", position: [0, 0, 0], rotation: [0, 0, 0], scale: [2, 0.5, 2], color: "#2c3e50" },
+        { type: "cylinder", position: [-0.5, 0.5, 0], rotation: [0, 0, 0], scale: [0.3, 1, 0.3], color: "#e67e22" },
+        { type: "cylinder", position: [0.5, 0.5, 0], rotation: [0, 0, 0], scale: [0.3, 1, 0.3], color: "#e67e22" },
+        { type: "box", position: [0, 1.2, 0], rotation: [0, 0, 0], scale: [1.5, 0.4, 1.5], color: "#95a5a6" }
+      ]
     }
 };
 

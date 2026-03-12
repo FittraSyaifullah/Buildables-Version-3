@@ -1,14 +1,46 @@
 
 import React, { useState } from 'react';
-import { CadConceptData } from '../../types';
+import { CadConceptData, ThreeDPrimitive } from '../../types';
 import { Box, Layers, MousePointer2, Move3d, RotateCcw, Share2, Maximize2, Settings, Info, BoxSelect, Cpu, Leaf, Tag, Wand2, Ruler, Weight, Hammer, Package, Clock, DollarSign, Database, Plus } from 'lucide-react';
 import { AddComponentModal } from '../Modals/AddComponentModal';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Grid, Environment } from '@react-three/drei';
 
 interface CadViewProps {
   data: CadConceptData;
   onAction?: (actionPrompt: string) => void;
   onOpenParametric?: (partName: string) => void;
 }
+
+const PrimitiveRenderer: React.FC<{ primitive: ThreeDPrimitive }> = ({ primitive }) => {
+  const { type, position, rotation, scale, color } = primitive;
+  
+  switch (type) {
+    case 'box':
+      return (
+        <mesh position={position} rotation={rotation} scale={scale}>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+      );
+    case 'sphere':
+      return (
+        <mesh position={position} rotation={rotation} scale={scale}>
+          <sphereGeometry args={[0.5, 32, 32]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+      );
+    case 'cylinder':
+      return (
+        <mesh position={position} rotation={rotation} scale={scale}>
+          <cylinderGeometry args={[0.5, 0.5, 1, 32]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+      );
+    default:
+      return null;
+  }
+};
 
 export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametric }) => {
   const [activeTab, setActiveTab] = useState<'components' | 'rationale'>('components');
@@ -95,34 +127,51 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
 
         {/* 3D Scene Placeholder */}
         <div className="flex-1 flex items-center justify-center relative bg-gradient-to-br from-[#091e42] to-[#000] overflow-hidden">
-            {/* Grid Floor */}
-            <div 
-                className="absolute inset-0 opacity-20 pointer-events-none" 
-                style={{
-                    backgroundImage: 'linear-gradient(#444 1px, transparent 1px), linear-gradient(90deg, #444 1px, transparent 1px)',
-                    backgroundSize: '40px 40px',
-                    transform: 'perspective(600px) rotateX(60deg) translateY(100px) scale(2)'
-                }}
-            ></div>
-            
-            {/* Object Central Placeholder */}
-            <div className="relative z-10 p-10 border border-dashed border-gray-600 rounded-2xl bg-white/5 backdrop-blur-sm flex flex-col items-center gap-4 text-center max-w-sm animate-in zoom-in duration-500">
-                <div className="relative">
-                    <div className="absolute inset-0 bg-brand-orange/20 blur-xl rounded-full"></div>
-                    <Box size={64} className="text-brand-orange relative z-10" strokeWidth={1} />
-                </div>
-                <div>
-                    <h4 className="text-white font-medium text-xl tracking-tight">{data.conceptName}</h4>
-                    <p className="text-xs text-gray-400 mt-2 font-mono uppercase tracking-widest">{data.metrics.dimensions}</p>
-                </div>
-                {/* Simulated markers */}
-                <div className="absolute -right-12 top-0 flex items-center gap-1 bg-[#172b4d] px-2 py-1 rounded text-[10px] text-white border border-[#253858]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand-darkBlue"></span> Motor Mount
-                </div>
-                <div className="absolute -left-8 bottom-0 flex items-center gap-1 bg-[#172b4d] px-2 py-1 rounded text-[10px] text-white border border-[#253858]">
-                     <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span> Base Plate
-                </div>
-            </div>
+            {data.threeDModel && data.threeDModel.length > 0 ? (
+                <Canvas camera={{ position: [5, 5, 5], fov: 50 }}>
+                    <ambientLight intensity={0.5} />
+                    <directionalLight position={[10, 10, 10]} intensity={1} />
+                    <Environment preset="city" />
+                    <OrbitControls makeDefault />
+                    <Grid infiniteGrid fadeDistance={50} sectionColor="#444" cellColor="#222" />
+                    <group>
+                        {data.threeDModel.map((primitive, idx) => (
+                            <PrimitiveRenderer key={idx} primitive={primitive} />
+                        ))}
+                    </group>
+                </Canvas>
+            ) : (
+                <>
+                    {/* Grid Floor */}
+                    <div 
+                        className="absolute inset-0 opacity-20 pointer-events-none" 
+                        style={{
+                            backgroundImage: 'linear-gradient(#444 1px, transparent 1px), linear-gradient(90deg, #444 1px, transparent 1px)',
+                            backgroundSize: '40px 40px',
+                            transform: 'perspective(600px) rotateX(60deg) translateY(100px) scale(2)'
+                        }}
+                    ></div>
+                    
+                    {/* Object Central Placeholder */}
+                    <div className="relative z-10 p-10 border border-dashed border-gray-600 rounded-2xl bg-white/5 backdrop-blur-sm flex flex-col items-center gap-4 text-center max-w-sm animate-in zoom-in duration-500">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-brand-orange/20 blur-xl rounded-full"></div>
+                            <Box size={64} className="text-brand-orange relative z-10" strokeWidth={1} />
+                        </div>
+                        <div>
+                            <h4 className="text-white font-medium text-xl tracking-tight">{data.conceptName}</h4>
+                            <p className="text-xs text-gray-400 mt-2 font-mono uppercase tracking-widest">{data.metrics.dimensions}</p>
+                        </div>
+                        {/* Simulated markers */}
+                        <div className="absolute -right-12 top-0 flex items-center gap-1 bg-[#172b4d] px-2 py-1 rounded text-[10px] text-white border border-[#253858]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-brand-darkBlue"></span> Motor Mount
+                        </div>
+                        <div className="absolute -left-8 bottom-0 flex items-center gap-1 bg-[#172b4d] px-2 py-1 rounded text-[10px] text-white border border-[#253858]">
+                             <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span> Base Plate
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
 
         {/* Bottom Metrics Bar */}

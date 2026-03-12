@@ -83,6 +83,14 @@ export interface LibraryPart {
   isFavorite?: boolean;
 }
 
+export interface ThreeDPrimitive {
+  type: 'box' | 'sphere' | 'cylinder';
+  position: [number, number, number];
+  rotation: [number, number, number];
+  scale: [number, number, number];
+  color: string;
+}
+
 export interface CadConceptData {
   conceptName: string;
   description: string;
@@ -96,6 +104,7 @@ export interface CadConceptData {
     sustainabilityRating?: 'A' | 'B' | 'C' | 'D';
   };
   visualStyle: 'wireframe' | 'shaded' | 'blueprint';
+  threeDModel?: ThreeDPrimitive[];
 }
 
 export interface DocumentData {
@@ -115,6 +124,7 @@ export interface UserContext {
   lifecycle: string;
   industry: string;
   role: string;
+  projectKnowledge?: string;
 }
 
 export interface AppSettings {
