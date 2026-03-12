@@ -61,11 +61,11 @@ export const BomView: React.FC<BomViewProps> = ({ data, onAction, onOpenParametr
 
   return (
     <div className="flex flex-col h-full bg-white text-sm font-sans">
-      <div className="p-6 md:p-8 border-b border-brand-blue/5 flex flex-col md:flex-row justify-between items-start md:items-center bg-brand-gray/30 gap-4">
+      <div className="p-6 md:p-8 border-b border-brand-darkBlue/5 flex flex-col md:flex-row justify-between items-start md:items-center bg-white gap-4">
         <div>
             <div className="flex items-center gap-2 mb-1">
-                <div className="h-px w-4 bg-brand-blue"></div>
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-blue">Current Manifest</span>
+                <div className="h-px w-4 bg-brand-darkBlue"></div>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-darkBlue">Current Manifest</span>
             </div>
             <h3 className="text-xl font-serif font-medium text-brand-darkBlue">Bill of Materials</h3>
             <p className="text-gray-400 text-xs font-light mt-1">{data.items.length} line items identified</p>
@@ -73,7 +73,7 @@ export const BomView: React.FC<BomViewProps> = ({ data, onAction, onOpenParametr
         <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
           <button 
             onClick={handleExportCSV}
-            className="flex items-center gap-2 px-4 py-2 text-brand-blue hover:bg-brand-lightBlue rounded-xl transition-all font-semibold text-xs border border-brand-blue/10 shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 text-brand-darkBlue hover:bg-brand-lightBlue rounded-xl transition-all font-semibold text-xs border border-brand-darkBlue/10 shadow-sm"
           >
             <Download size={16} />
             <span>Export CSV</span>
@@ -87,7 +87,7 @@ export const BomView: React.FC<BomViewProps> = ({ data, onAction, onOpenParametr
 
       <div className="flex-1 overflow-auto custom-scrollbar">
         <table className="w-full text-left border-collapse">
-          <thead className="bg-white sticky top-0 z-10 shadow-sm text-[10px] uppercase text-brand-darkBlue/40 font-bold tracking-[0.15em] border-b border-brand-blue/5">
+          <thead className="bg-white sticky top-0 z-10 shadow-sm text-[10px] uppercase text-brand-darkBlue/40 font-bold tracking-[0.15em] border-b border-brand-darkBlue/5">
             <tr>
               <th className="p-4 pl-8">Component Info</th>
               <th className="p-4">Manufacturer</th>
@@ -96,11 +96,11 @@ export const BomView: React.FC<BomViewProps> = ({ data, onAction, onOpenParametr
               <th className="p-4 pr-8 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-brand-blue/5">
+          <tbody className="divide-y divide-brand-darkBlue/5">
             {data.items.map((item) => (
               <tr key={item.id} className="hover:bg-brand-lightBlue/10 group transition-colors">
                 <td className="p-4 pl-8">
-                  <div className="font-mono font-bold text-brand-blue flex items-center gap-1.5 cursor-pointer hover:underline text-xs">
+                  <div className="font-mono font-bold text-brand-darkBlue flex items-center gap-1.5 cursor-pointer hover:underline text-xs">
                     {item.partNumber}
                     <ExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
@@ -126,13 +126,13 @@ export const BomView: React.FC<BomViewProps> = ({ data, onAction, onOpenParametr
                     <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
                         <button 
                             onClick={() => onAction?.(`Find alternative suppliers for ${item.partNumber} (${item.manufacturer})`)}
-                            className="p-2 hover:bg-brand-lightBlue text-gray-400 hover:text-brand-blue rounded-xl transition-all" title="Find Alternatives"
+                            className="p-2 hover:bg-brand-lightBlue text-gray-400 hover:text-brand-darkBlue rounded-xl transition-all" title="Find Alternatives"
                         >
                             <RefreshCw size={14} />
                         </button>
                         <button 
                              onClick={() => onOpenParametric ? onOpenParametric(item.partNumber) : onAction?.(`Provide detailed datasheet specs for ${item.partNumber}`)}
-                            className="p-2 hover:bg-brand-lightBlue text-gray-400 hover:text-brand-blue rounded-xl transition-all" title="Parametric Specs"
+                            className="p-2 hover:bg-brand-lightBlue text-gray-400 hover:text-brand-darkBlue rounded-xl transition-all" title="Parametric Specs"
                         >
                             <Search size={14} />
                         </button>
@@ -144,7 +144,7 @@ export const BomView: React.FC<BomViewProps> = ({ data, onAction, onOpenParametr
         </table>
       </div>
 
-      <div className="p-6 border-t border-brand-blue/5 bg-white flex flex-col gap-3">
+      <div className="p-6 border-t border-brand-darkBlue/5 bg-white flex flex-col gap-3">
         {showExportSuccess && (
             <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 animate-fade-in border border-emerald-100 mb-2">
                 <Check size={14} />
@@ -155,7 +155,7 @@ export const BomView: React.FC<BomViewProps> = ({ data, onAction, onOpenParametr
             <button 
                 onClick={handleExportToCart}
                 disabled={isExporting}
-                className="flex-1 bg-brand-darkBlue text-white py-3.5 rounded-2xl text-sm font-bold hover:bg-brand-blue transition-all flex justify-center items-center gap-2.5 shadow-lg hover:shadow-2xl hover:-translate-y-0.5 group disabled:opacity-70 disabled:cursor-not-allowed"
+                className="flex-1 bg-brand-orange text-white py-3.5 rounded-2xl text-sm font-bold hover:bg-orange-600 transition-all flex justify-center items-center gap-2.5 shadow-lg hover:shadow-2xl hover:-translate-y-0.5 group disabled:opacity-70 disabled:cursor-not-allowed"
             >
             {isExporting ? (
                 <Loader2 size={18} className="animate-spin" />
@@ -167,7 +167,7 @@ export const BomView: React.FC<BomViewProps> = ({ data, onAction, onOpenParametr
             <button 
                 onClick={handleOptimize}
                 disabled={isOptimizing}
-                className="px-6 py-3.5 bg-white border border-brand-blue/10 text-brand-darkBlue rounded-2xl text-sm font-bold hover:bg-brand-lightBlue hover:text-brand-blue transition-all shadow-sm hover:shadow-md flex items-center gap-2 disabled:opacity-70"
+                className="px-6 py-3.5 bg-white border border-brand-darkBlue/10 text-brand-darkBlue rounded-2xl text-sm font-bold hover:bg-brand-lightBlue hover:text-brand-darkBlue transition-all shadow-sm hover:shadow-md flex items-center gap-2 disabled:opacity-70"
             >
                 {isOptimizing ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} className="text-brand-orange" />}
                 {isOptimizing ? 'Analyzing...' : 'Optimize Cost'}

@@ -117,7 +117,7 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
                 </div>
                 {/* Simulated markers */}
                 <div className="absolute -right-12 top-0 flex items-center gap-1 bg-[#172b4d] px-2 py-1 rounded text-[10px] text-white border border-[#253858]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand-blue"></span> Motor Mount
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-darkBlue"></span> Motor Mount
                 </div>
                 <div className="absolute -left-8 bottom-0 flex items-center gap-1 bg-[#172b4d] px-2 py-1 rounded text-[10px] text-white border border-[#253858]">
                      <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span> Base Plate
@@ -135,7 +135,7 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
                         ECO RATING: 
                         <span className={`font-bold ${
                             data.metrics.sustainabilityRating === 'A' ? 'text-green-400' : 
-                            data.metrics.sustainabilityRating === 'B' ? 'text-brand-blue' : 'text-yellow-400'
+                            data.metrics.sustainabilityRating === 'B' ? 'text-brand-darkBlue' : 'text-yellow-400'
                         }`}>
                             {data.metrics.sustainabilityRating}
                         </span>
@@ -159,20 +159,20 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
          <div className="flex border-b border-gray-100">
             <button 
                 onClick={() => setActiveTab('components')}
-                className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'components' ? 'border-brand-blue text-brand-blue' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+                className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'components' ? 'border-brand-darkBlue text-brand-darkBlue' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
             >
                 Part List
             </button>
             <button 
                 onClick={() => setActiveTab('rationale')}
-                className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'rationale' ? 'border-brand-blue text-brand-blue' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+                className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'rationale' ? 'border-brand-darkBlue text-brand-darkBlue' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
             >
                 Rationale
             </button>
          </div>
 
          {/* Tab Content */}
-         <div className="flex-1 overflow-y-auto custom-scrollbar bg-brand-gray p-0">
+         <div className="flex-1 overflow-y-auto custom-scrollbar bg-white p-0">
             {activeTab === 'components' ? (
                 <div className="divide-y divide-gray-100">
                     {data.components.map((comp, idx) => (
@@ -194,7 +194,7 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
                                         </span>
                                     )}
                                     {comp.sourcing === 'off_the_shelf' && (
-                                        <span className="text-[10px] bg-brand-lightBlue text-brand-darkBlue px-1.5 py-0.5 rounded border border-brand-blue/20 font-medium flex items-center gap-0.5">
+                                        <span className="text-[10px] bg-brand-lightBlue text-brand-darkBlue px-1.5 py-0.5 rounded border border-brand-darkBlue/20 font-medium flex items-center gap-0.5">
                                             <Package size={8} /> COTS
                                         </span>
                                     )}
@@ -232,14 +232,14 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
                                     <div className="flex gap-2">
                                         <button 
                                             onClick={() => onAction?.(`Update sourcing details (Supplier, MPN, Price, Lead Time) for '${comp.name}'`)}
-                                            className="flex-1 text-center py-1.5 bg-gray-50 border border-gray-200 text-gray-600 rounded hover:bg-gray-100 hover:text-brand-blue transition-colors text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-1"
+                                            className="flex-1 text-center py-1.5 bg-gray-50 border border-gray-200 text-gray-600 rounded hover:bg-gray-100 hover:text-brand-darkBlue transition-colors text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-1"
                                         >
                                             <Settings size={10} />
                                             Edit
                                         </button>
                                         <button 
                                             onClick={() => onOpenParametric && onOpenParametric(comp.mpn || comp.name)}
-                                            className="flex-1 text-center py-1.5 bg-brand-lightBlue text-brand-blue border border-brand-lightBlue rounded hover:bg-brand-blue/20 transition-colors text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-1"
+                                            className="flex-1 text-center py-1.5 bg-brand-darkBlue text-white border border-brand-darkBlue rounded hover:bg-brand-darkBlue transition-colors text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-1"
                                         >
                                             <Database size={10} />
                                             Params
@@ -266,7 +266,7 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
                                     <div className="pt-2">
                                         <button 
                                             onClick={() => onOpenParametric && onOpenParametric(comp.name)}
-                                            className="w-full py-1.5 bg-white border border-gray-200 text-gray-500 rounded hover:bg-gray-50 hover:text-brand-blue hover:border-brand-blue transition-colors text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-1"
+                                            className="w-full py-1.5 bg-white border border-gray-200 text-gray-500 rounded hover:bg-gray-50 hover:text-brand-darkBlue hover:border-brand-darkBlue transition-colors text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-1"
                                         >
                                             <Database size={10} />
                                             View Specs
@@ -277,7 +277,7 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
 
                              {/* Notes always visible */}
                             {comp.notes && (
-                                <div className="mt-2 text-[11px] text-brand-orange bg-orange-50/50 p-2 rounded border border-orange-100/50 flex gap-2">
+                                <div className="mt-2 text-[11px] text-brand-orange bg-brand-orange/10 p-2 rounded border border-brand-orange/20 flex gap-2">
                                     <Tag size={12} className="flex-shrink-0 mt-0.5" />
                                     <span>{comp.notes}</span>
                                 </div>
@@ -289,7 +289,7 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
                     <div className="p-4">
                         <button 
                             onClick={() => setIsAddModalOpen(true)} 
-                            className="w-full py-2 border-2 border-dashed border-gray-200 rounded-lg text-gray-400 font-bold text-xs uppercase tracking-wider hover:border-brand-blue hover:text-brand-blue hover:bg-brand-lightBlue/10 transition-all flex items-center justify-center gap-2"
+                            className="w-full py-2 border-2 border-dashed border-gray-200 rounded-lg text-gray-400 font-bold text-xs uppercase tracking-wider hover:border-brand-darkBlue hover:text-brand-darkBlue hover:bg-brand-lightBlue/10 transition-all flex items-center justify-center gap-2"
                         >
                             <Plus size={14} /> Add Component
                         </button>
@@ -307,7 +307,7 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
             ) : (
                 <div className="p-5 space-y-6">
                     <div>
-                        <h4 className="text-xs font-bold text-brand-blue uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <h4 className="text-xs font-bold text-brand-darkBlue uppercase tracking-wider mb-2 flex items-center gap-2">
                             <Info size={14} /> Design Logic
                         </h4>
                         <p className="text-sm text-gray-600 leading-relaxed bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
@@ -334,7 +334,7 @@ export const CadView: React.FC<CadViewProps> = ({ data, onAction, onOpenParametr
 
          {/* Footer Actions */}
          <div className="p-4 bg-white border-t border-gray-200">
-            <button className="w-full flex items-center justify-center gap-2 bg-brand-lightBlue text-brand-blue font-bold py-2 rounded-lg text-sm hover:bg-brand-blue/20 transition-colors">
+            <button className="w-full flex items-center justify-center gap-2 bg-brand-orange text-white font-bold py-2 rounded-lg text-sm hover:bg-orange-600 transition-colors">
                 <Share2 size={16} /> Share Concept
             </button>
          </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UserContext } from '../types';
-import { ArrowRight, Check, Briefcase, Wrench, RefreshCw, Cpu, Layers, Factory, Globe, GraduationCap, Medal } from 'lucide-react';
+import { ArrowRight, Check, Briefcase, Wrench, Layers, Factory, Globe, GraduationCap, Medal, Cpu, ChevronLeft, Sparkles } from 'lucide-react';
 
 interface OnboardingModalProps {
   onComplete: (context: UserContext) => void;
@@ -17,9 +17,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) 
   const TOTAL_STEPS = 5;
 
   const workflows = [
-    { id: 'rapid_proto', label: 'Rapid Prototyping', desc: 'Speed and iteration over perfection', icon: <Cpu size={20} /> },
-    { id: 'production', label: 'Production Engineering', desc: 'DFM, cost reduction, reliability', icon: <Briefcase size={20} /> },
-    { id: 'r_and_d', label: 'Research & Development', desc: 'Exploratory, high uncertainty', icon: <Layers size={20} /> },
+    { id: 'rapid_proto', label: 'Rapid Prototyping', desc: 'Speed and iteration over perfection', icon: <Cpu size={24} /> },
+    { id: 'production', label: 'Production Engineering', desc: 'DFM, cost reduction, reliability', icon: <Briefcase size={24} /> },
+    { id: 'r_and_d', label: 'Research & Development', desc: 'Exploratory, high uncertainty', icon: <Layers size={24} /> },
   ];
 
   const resourceOptions = [
@@ -38,17 +38,17 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) 
   ];
 
   const industries = [
-    { id: 'consumer', label: 'Consumer Electronics', icon: <Cpu size={18} /> },
-    { id: 'automation', label: 'Industrial Automation', icon: <Factory size={18} /> },
-    { id: 'medical', label: 'Medical Devices', icon: <Briefcase size={18} /> },
-    { id: 'robotics', label: 'Robotics', icon: <Wrench size={18} /> },
-    { id: 'auto', label: 'Automotive / Aerospace', icon: <Globe size={18} /> },
+    { id: 'consumer', label: 'Consumer Electronics', icon: <Cpu size={20} /> },
+    { id: 'automation', label: 'Industrial Automation', icon: <Factory size={20} /> },
+    { id: 'medical', label: 'Medical Devices', icon: <Briefcase size={20} /> },
+    { id: 'robotics', label: 'Robotics', icon: <Wrench size={20} /> },
+    { id: 'auto', label: 'Automotive / Aerospace', icon: <Globe size={20} /> },
   ];
 
   const roles = [
-    { id: 'student', label: 'Student / Junior Engineer', desc: 'Focus on learning and first principles', icon: <GraduationCap size={18} /> },
-    { id: 'senior', label: 'Senior Engineer', desc: 'Focus on standards, speed, and validation', icon: <Wrench size={18} /> },
-    { id: 'lead', label: 'Lead / Manager', desc: 'Focus on risk, cost, and system architecture', icon: <Medal size={18} /> },
+    { id: 'student', label: 'Student / Junior Engineer', desc: 'Focus on learning and first principles', icon: <GraduationCap size={24} /> },
+    { id: 'senior', label: 'Senior Engineer', desc: 'Focus on standards, speed, and validation', icon: <Wrench size={24} /> },
+    { id: 'lead', label: 'Lead / Manager', desc: 'Focus on risk, cost, and system architecture', icon: <Medal size={24} /> },
   ];
 
   const toggleResource = (res: string) => {
@@ -81,173 +81,223 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-brand-darkBlue/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="bg-brand-gray border-b border-gray-200 p-6 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-brand-darkBlue">Setup your Workspace</h2>
-            <p className="text-sm text-gray-500 mt-1">Configure Buildables v3 for your specific needs.</p>
+    <div className="fixed inset-0 z-[100] flex bg-white animate-in fade-in duration-500 font-sans">
+      {/* Left Pane - Branding & Context */}
+      <div className="hidden md:flex w-1/2 bg-brand-darkBlue text-white p-16 flex-col justify-between relative overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-[-10%] left-[-10%] w-[120%] h-[120%] bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.05)_0%,transparent_50%)] pointer-events-none" />
+        
+        <div className="relative z-10">
+          <div className="w-16 h-16 bg-white text-brand-darkBlue rounded-2xl flex items-center justify-center shadow-2xl mb-12 transform -rotate-3">
+            <span className="font-serif font-bold text-3xl">B</span>
           </div>
-          <div className="flex items-center gap-2">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className={`h-2 w-2 rounded-full transition-colors ${step >= i ? 'bg-brand-blue' : 'bg-gray-300'}`} />
-            ))}
-          </div>
+          <h1 className="text-6xl lg:text-7xl font-serif font-medium leading-[0.9] tracking-tight mb-8">
+            Buildables<br/>
+            <span className="text-brand-orange italic font-light">Workspace</span>
+          </h1>
+          <p className="text-xl text-white/70 max-w-md font-light leading-relaxed">
+            Let's configure your AI engineering environment to match your specific workflow, resources, and industry standards.
+          </p>
         </div>
 
-        {/* Body */}
-        <div className="p-8 flex-1 overflow-y-auto custom-scrollbar">
-          {step === 1 && (
-            <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-              <h3 className="text-lg font-semibold text-brand-darkBlue mb-4">1. What describes your primary workflow?</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {workflows.map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={() => setWorkflow(opt.id)}
-                    className={`flex flex-col items-start p-4 border rounded-xl text-left transition-all ${
-                      workflow === opt.id 
-                        ? 'border-brand-blue bg-brand-lightBlue ring-1 ring-brand-blue' 
-                        : 'border-gray-200 hover:border-brand-blue/50 hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className={`p-2 rounded-lg mb-3 ${workflow === opt.id ? 'bg-brand-blue text-white' : 'bg-gray-100 text-gray-500'}`}>
-                      {opt.icon}
-                    </div>
-                    <div className="font-bold text-brand-darkBlue text-sm">{opt.label}</div>
-                    <div className="text-xs text-gray-500 mt-1">{opt.desc}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 text-white/50 text-sm font-bold tracking-widest uppercase">
+            <Sparkles size={16} className="text-brand-orange" />
+            <span>AI-Powered Engineering</span>
+          </div>
+        </div>
+      </div>
 
-          {step === 2 && (
-            <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-              <h3 className="text-lg font-semibold text-brand-darkBlue mb-4">2. What resources do you have access to?</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {resourceOptions.map((res) => (
-                  <button
-                    key={res}
-                    onClick={() => toggleResource(res)}
-                    className={`flex items-center p-4 border rounded-xl transition-all ${
-                      resources.includes(res)
-                        ? 'border-brand-blue bg-brand-lightBlue text-brand-blue'
-                        : 'border-gray-200 hover:border-brand-blue/50 text-gray-600'
-                    }`}
-                  >
-                    <div className={`w-5 h-5 rounded border mr-3 flex items-center justify-center ${
-                      resources.includes(res) ? 'bg-brand-blue border-brand-blue' : 'border-gray-300 bg-white'
-                    }`}>
-                      {resources.includes(res) && <Check size={14} className="text-white" />}
-                    </div>
-                    <span className="text-sm font-medium">{res}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+      {/* Right Pane - Form */}
+      <div className="w-full md:w-1/2 flex flex-col h-full relative bg-white">
+        {/* Progress Bar */}
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100">
+          <div 
+            className="h-full bg-brand-orange transition-all duration-500 ease-out"
+            style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
+          />
+        </div>
 
-          {step === 3 && (
-             <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-             <h3 className="text-lg font-semibold text-brand-darkBlue mb-4">3. Which product lifecycle do you follow?</h3>
-             <div className="space-y-3">
-               {lifecycles.map((opt) => (
-                 <button
-                   key={opt.id}
-                   onClick={() => setLifecycle(opt.id)}
-                   className={`w-full flex items-center justify-between p-4 border rounded-xl text-left transition-all ${
-                     lifecycle === opt.id 
-                       ? 'border-brand-blue bg-brand-lightBlue ring-1 ring-brand-blue' 
-                       : 'border-gray-200 hover:border-brand-blue/50 hover:bg-gray-50'
-                   }`}
-                 >
-                   <div>
-                     <div className="font-bold text-brand-darkBlue text-sm">{opt.label}</div>
-                     <div className="text-xs text-gray-500 mt-0.5">{opt.desc}</div>
-                   </div>
-                   {lifecycle === opt.id && <div className="text-brand-blue"><Check size={20} /></div>}
-                 </button>
-               ))}
+        <div className="flex-1 overflow-y-auto p-8 md:p-16 flex flex-col justify-center custom-scrollbar">
+          <div className="max-w-xl w-full mx-auto">
+            
+            {step === 1 && (
+              <div className="space-y-8 animate-in slide-in-from-right-8 fade-in duration-500">
+                <div>
+                  <span className="text-brand-orange font-bold tracking-widest uppercase text-xs mb-3 block">Step 1 of 5</span>
+                  <h2 className="text-3xl md:text-4xl font-serif font-medium text-brand-darkBlue tracking-tight">What describes your primary workflow?</h2>
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                  {workflows.map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setWorkflow(opt.id)}
+                      className={`flex items-center p-6 rounded-2xl text-left transition-all duration-300 border-2 ${
+                        workflow === opt.id 
+                          ? 'border-brand-darkBlue bg-brand-lightBlue/30 shadow-md' 
+                          : 'border-gray-100 hover:border-brand-darkBlue/30 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className={`p-4 rounded-xl mr-6 transition-colors ${workflow === opt.id ? 'bg-brand-darkBlue text-white' : 'bg-gray-100 text-gray-500'}`}>
+                        {opt.icon}
+                      </div>
+                      <div>
+                        <div className="font-bold text-brand-darkBlue text-lg mb-1">{opt.label}</div>
+                        <div className="text-sm text-gray-500 font-medium">{opt.desc}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-8 animate-in slide-in-from-right-8 fade-in duration-500">
+                <div>
+                  <span className="text-brand-orange font-bold tracking-widest uppercase text-xs mb-3 block">Step 2 of 5</span>
+                  <h2 className="text-3xl md:text-4xl font-serif font-medium text-brand-darkBlue tracking-tight">What resources do you have access to?</h2>
+                  <p className="text-gray-500 mt-3 font-medium">Select all that apply.</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {resourceOptions.map((res) => (
+                    <button
+                      key={res}
+                      onClick={() => toggleResource(res)}
+                      className={`flex items-center p-5 rounded-2xl border-2 transition-all duration-300 ${
+                        resources.includes(res)
+                          ? 'border-brand-darkBlue bg-brand-lightBlue/30 shadow-md'
+                          : 'border-gray-100 hover:border-brand-darkBlue/30 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className={`w-6 h-6 rounded-md border-2 mr-4 flex items-center justify-center transition-colors ${
+                        resources.includes(res) ? 'bg-brand-darkBlue border-brand-darkBlue' : 'border-gray-300 bg-white'
+                      }`}>
+                        {resources.includes(res) && <Check size={14} className="text-white" />}
+                      </div>
+                      <span className="text-sm font-bold text-brand-darkBlue">{res}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+               <div className="space-y-8 animate-in slide-in-from-right-8 fade-in duration-500">
+               <div>
+                 <span className="text-brand-orange font-bold tracking-widest uppercase text-xs mb-3 block">Step 3 of 5</span>
+                 <h2 className="text-3xl md:text-4xl font-serif font-medium text-brand-darkBlue tracking-tight">Which product lifecycle do you follow?</h2>
+               </div>
+               <div className="grid grid-cols-1 gap-4">
+                 {lifecycles.map((opt) => (
+                   <button
+                     key={opt.id}
+                     onClick={() => setLifecycle(opt.id)}
+                     className={`flex items-center justify-between p-6 rounded-2xl text-left transition-all duration-300 border-2 ${
+                       lifecycle === opt.id 
+                         ? 'border-brand-darkBlue bg-brand-lightBlue/30 shadow-md' 
+                         : 'border-gray-100 hover:border-brand-darkBlue/30 hover:bg-gray-50'
+                     }`}
+                   >
+                     <div>
+                       <div className="font-bold text-brand-darkBlue text-lg mb-1">{opt.label}</div>
+                       <div className="text-sm text-gray-500 font-medium">{opt.desc}</div>
+                     </div>
+                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                       lifecycle === opt.id ? 'border-brand-darkBlue bg-brand-darkBlue' : 'border-gray-300'
+                     }`}>
+                         {lifecycle === opt.id && <div className="w-2 h-2 bg-white rounded-full" />}
+                     </div>
+                   </button>
+                 ))}
+               </div>
              </div>
-           </div>
-          )}
+            )}
 
-          {step === 4 && (
-            <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-              <h3 className="text-lg font-semibold text-brand-darkBlue mb-4">4. What is your primary industry domain?</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {industries.map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={() => setIndustry(opt.id)}
-                    className={`flex items-center gap-3 p-4 border rounded-xl text-left transition-all ${
-                      industry === opt.id 
-                        ? 'border-brand-blue bg-brand-lightBlue ring-1 ring-brand-blue' 
-                        : 'border-gray-200 hover:border-brand-blue/50 hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className={`p-2 rounded-lg ${industry === opt.id ? 'bg-brand-blue text-white' : 'bg-gray-100 text-gray-500'}`}>
-                      {opt.icon}
-                    </div>
-                    <span className="font-bold text-brand-darkBlue text-sm">{opt.label}</span>
-                  </button>
-                ))}
+            {step === 4 && (
+              <div className="space-y-8 animate-in slide-in-from-right-8 fade-in duration-500">
+                <div>
+                  <span className="text-brand-orange font-bold tracking-widest uppercase text-xs mb-3 block">Step 4 of 5</span>
+                  <h2 className="text-3xl md:text-4xl font-serif font-medium text-brand-darkBlue tracking-tight">What is your primary industry domain?</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {industries.map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setIndustry(opt.id)}
+                      className={`flex flex-col items-start p-6 rounded-2xl text-left transition-all duration-300 border-2 ${
+                        industry === opt.id 
+                          ? 'border-brand-darkBlue bg-brand-lightBlue/30 shadow-md' 
+                          : 'border-gray-100 hover:border-brand-darkBlue/30 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className={`p-3 rounded-xl mb-4 transition-colors ${industry === opt.id ? 'bg-brand-darkBlue text-white' : 'bg-gray-100 text-gray-500'}`}>
+                        {opt.icon}
+                      </div>
+                      <span className="font-bold text-brand-darkBlue text-base">{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {step === 5 && (
-            <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-              <h3 className="text-lg font-semibold text-brand-darkBlue mb-4">5. What is your engineering role?</h3>
-              <div className="space-y-3">
-                {roles.map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={() => setRole(opt.id)}
-                    className={`w-full flex items-center gap-4 p-4 border rounded-xl text-left transition-all ${
-                      role === opt.id 
-                        ? 'border-brand-blue bg-brand-lightBlue ring-1 ring-brand-blue' 
-                        : 'border-gray-200 hover:border-brand-blue/50 hover:bg-gray-50'
-                    }`}
-                  >
-                     <div className={`p-2 rounded-lg ${role === opt.id ? 'bg-brand-blue text-white' : 'bg-gray-100 text-gray-500'}`}>
-                      {opt.icon}
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-bold text-brand-darkBlue text-sm">{opt.label}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">{opt.desc}</div>
-                    </div>
-                    {role === opt.id && <div className="text-brand-blue"><Check size={20} /></div>}
-                  </button>
-                ))}
+            {step === 5 && (
+              <div className="space-y-8 animate-in slide-in-from-right-8 fade-in duration-500">
+                <div>
+                  <span className="text-brand-orange font-bold tracking-widest uppercase text-xs mb-3 block">Step 5 of 5</span>
+                  <h2 className="text-3xl md:text-4xl font-serif font-medium text-brand-darkBlue tracking-tight">What is your engineering role?</h2>
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                  {roles.map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setRole(opt.id)}
+                      className={`flex items-center p-6 rounded-2xl text-left transition-all duration-300 border-2 ${
+                        role === opt.id 
+                          ? 'border-brand-darkBlue bg-brand-lightBlue/30 shadow-md' 
+                          : 'border-gray-100 hover:border-brand-darkBlue/30 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className={`p-4 rounded-xl mr-6 transition-colors ${role === opt.id ? 'bg-brand-darkBlue text-white' : 'bg-gray-100 text-gray-500'}`}>
+                        {opt.icon}
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-bold text-brand-darkBlue text-lg mb-1">{opt.label}</div>
+                        <div className="text-sm text-gray-500 font-medium">{opt.desc}</div>
+                      </div>
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                        role === opt.id ? 'border-brand-darkBlue bg-brand-darkBlue' : 'border-gray-300'
+                      }`}>
+                          {role === opt.id && <div className="w-2 h-2 bg-white rounded-full" />}
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
+          </div>
         </div>
 
-        {/* Footer */}
-        <div className="p-6 border-t border-gray-200 flex justify-between items-center bg-gray-50">
+        {/* Footer Actions */}
+        <div className="p-8 md:px-16 border-t border-gray-100 bg-white flex justify-between items-center flex-shrink-0">
           <button 
             onClick={() => step > 1 && setStep(step - 1)}
-            className={`text-sm font-medium text-gray-500 hover:text-brand-darkBlue px-4 py-2 ${step === 1 ? 'invisible' : ''}`}
+            className={`flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-brand-darkBlue transition-colors ${step === 1 ? 'invisible' : ''}`}
           >
-            Back
+            <ChevronLeft size={18} /> Back
           </button>
           
           <button
             onClick={handleNext}
             disabled={!isStepValid()}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold text-white transition-all ${
+            className={`flex items-center gap-3 px-8 py-4 rounded-2xl text-sm font-bold text-white transition-all ${
               isStepValid() 
-                ? 'bg-brand-orange hover:bg-orange-600 shadow-md transform hover:-translate-y-0.5' 
-                : 'bg-gray-300 cursor-not-allowed'
+                ? 'bg-brand-darkBlue hover:bg-brand-orange shadow-xl hover:shadow-2xl hover:-translate-y-1' 
+                : 'bg-gray-200 cursor-not-allowed text-gray-400'
             }`}
           >
-            {step === TOTAL_STEPS ? 'Finish Setup' : 'Continue'}
-            <ArrowRight size={16} />
+            {step === TOTAL_STEPS ? 'Enter Workspace' : 'Continue'}
+            <ArrowRight size={18} />
           </button>
         </div>
       </div>

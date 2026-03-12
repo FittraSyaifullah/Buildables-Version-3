@@ -12,17 +12,17 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ data }) => {
        {/* Toolbar */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
          <div className="flex items-center gap-2 text-brand-darkBlue">
-            <FileText size={18} className="text-brand-blue" />
+            <FileText size={18} className="text-brand-darkBlue" />
             <span className="font-bold text-sm">Engineering Doc</span>
          </div>
          <div className="flex gap-2">
-            <button className="p-2 hover:bg-gray-100 rounded text-gray-500 hover:text-brand-blue" title="Print"><Printer size={16} /></button>
-            <button className="p-2 hover:bg-gray-100 rounded text-gray-500 hover:text-brand-blue" title="Download PDF"><Download size={16} /></button>
+            <button className="p-2 hover:bg-gray-100 rounded text-gray-500 hover:text-brand-darkBlue" title="Print"><Printer size={16} /></button>
+            <button className="p-2 hover:bg-gray-100 rounded text-gray-500 hover:text-brand-darkBlue" title="Download PDF"><Download size={16} /></button>
          </div>
       </div>
 
       {/* Document Content */}
-      <div className="flex-1 overflow-auto custom-scrollbar bg-brand-gray p-8">
+      <div className="flex-1 overflow-auto custom-scrollbar bg-white p-8">
         <div className="max-w-2xl mx-auto bg-white shadow-sm border border-gray-200 min-h-[800px] p-12">
             <div className="border-b-2 border-brand-darkBlue pb-4 mb-8">
                 <h1 className="font-serif text-3xl font-bold text-brand-darkBlue leading-tight">{data.title}</h1>
@@ -35,7 +35,7 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ data }) => {
             <div className="space-y-8 font-serif text-gray-800 leading-relaxed">
                 {data.sections.map((section, idx) => (
                     <div key={idx}>
-                        <h2 className="font-sans text-sm font-bold uppercase tracking-wide text-brand-blue mb-3">{section.heading}</h2>
+                        <h2 className="font-sans text-sm font-bold uppercase tracking-wide text-brand-darkBlue mb-3">{section.heading}</h2>
                         <div className="prose prose-stone text-sm whitespace-pre-wrap">
                             {section.body}
                         </div>

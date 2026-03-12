@@ -18,6 +18,7 @@ import { Dashboard } from './components/Dashboard';
 import { TutorialOverlay } from './components/TutorialOverlay';
 import { SavedBomsView } from './components/SavedBomsView';
 import { DocumentCenter } from './components/DocumentCenter';
+import { Workspace } from './components/Workspace';
 import Markdown from 'react-markdown';
 
 // Mock Data for Dashboard
@@ -235,7 +236,7 @@ const App: React.FC = () => {
   const [imageAttachment, setImageAttachment] = useState<string | null>(null);
   
   // Navigation State
-  const [currentView, setCurrentView] = useState<'chat' | 'dashboard' | 'library' | 'saved-boms' | 'documents'>('chat');
+  const [currentView, setCurrentView] = useState<'chat' | 'dashboard' | 'workspace'>('chat');
   
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -569,46 +570,46 @@ const App: React.FC = () => {
       case 'concept':
         return [
           { 
-              heading: "Heavy-duty Camera Mount", 
-              prompt: "Create a CAD concept for a heavy-duty camera mount focused on vibration dampening.", 
+              heading: "Guaranteed Fit", 
+              prompt: "Find off-the-shelf components with auto-generating parametric mounts.", 
               icon: <Box size={20}/> 
           },
           { 
-              heading: "Compliant Gripper", 
-              prompt: "Design a compliant mechanism for a soft robotics gripper.", 
+              heading: "Optimize for Fabrication", 
+              prompt: "Review my design against industry standards and manufacturing guidelines.", 
               icon: <Cpu size={20}/> 
           },
           { 
-              heading: "Waterproof Enclosure", 
-              prompt: "Generate a concept for an IP67 water-resistant electronics enclosure.", 
+              heading: "Annotate 3D Models", 
+              prompt: "Identify errors and non-conformances in my current CAD model.", 
               icon: <Shield size={20}/> 
           },
           { 
-              heading: "Sheet Metal Bracket", 
-              prompt: "Design a mounting bracket for a NEMA 17 stepper motor optimized for sheet metal fabrication.", 
+              heading: "Education Mode", 
+              prompt: "Fast-track my physical assembly with step-by-step guidance.", 
               icon: <Layers size={20}/> 
           }
         ];
       case 'sourcing':
         return [
           { 
-              heading: "Robotic Arm BOM", 
-              prompt: "Draft a Bill of Materials for a 6-DOF robotic arm including servos, bearings, and fasteners.", 
+              heading: "Automate BOM Generation", 
+              prompt: "Turn my CAD model into a sourced, costed, and manufacturing-ready BOM.", 
               icon: <List size={20}/> 
           },
           { 
-              heading: "Find Alternatives", 
-              prompt: "Find in-stock alternatives for the STM32F405 microcontroller with matching footprint.", 
+              heading: "Compare Suppliers", 
+              prompt: "Compare local vs. overseas suppliers for my specific volume and lead-time.", 
               icon: <Search size={20}/> 
           },
           { 
-              heading: "Supply Chain Risk", 
-              prompt: "Identify potential long lead-time components in a standard drone ESC design.", 
+              heading: "Find Alternatives", 
+              prompt: "Search supplier catalogs and internal parts faster for alternatives.", 
               icon: <AlertTriangle size={20}/> 
           },
           { 
               heading: "Cost Estimation", 
-              prompt: "Estimate the production cost breakdown for 500 units of a Bluetooth LE beacon.", 
+              prompt: "Estimate the production cost breakdown for 500 units.", 
               icon: <DollarSign size={20}/> 
           }
         ];
@@ -616,23 +617,23 @@ const App: React.FC = () => {
       default:
         return [
           { 
-              heading: "Design Review", 
-              prompt: "Review design assumptions for a high-temperature sensor enclosure.", 
+              heading: "Search Specs", 
+              prompt: "Search specific sections of a datasheet for compliance.", 
               icon: <Eye size={20}/> 
           },
           { 
-              heading: "Material Comparison", 
-              prompt: "Explain the trade-offs between Aluminum 6061-T6 and 7075-T6 for aerospace brackets.", 
+              heading: "Automate Code", 
+              prompt: "Generate MATLAB, Python, or C++ scripts for analysis and automation.", 
               icon: <Scale size={20}/> 
           },
           { 
-              heading: "ISO Compliance", 
-              prompt: "Summarize the key documentation requirements for ISO 13485 medical device compliance.", 
+              heading: "Document Designs", 
+              prompt: "Draft and edit documentation from my designs.", 
               icon: <FileText size={20}/> 
           },
           { 
-              heading: "Torque Calculation", 
-              prompt: "Calculate the required motor torque to lift a 5kg load using a 20mm radius pulley.", 
+              heading: "Run Calculations", 
+              prompt: "Run complex calculations and reference standards with sources.", 
               icon: <Calculator size={20}/> 
           }
         ];
@@ -640,12 +641,12 @@ const App: React.FC = () => {
   };
 
   const tools = [
-      { id: 'img-search', label: 'Visual Search', icon: <Camera size={18} />, color: 'bg-brand-blue/10 text-brand-blue', prompt: '' },
-      { id: 'search', label: 'Web Search', icon: <Globe size={18} />, color: 'bg-brand-blue/10 text-brand-blue', prompt: 'Search the web for' },
+      { id: 'img-search', label: 'Visual Search', icon: <Camera size={18} />, color: 'bg-brand-darkBlue/10 text-brand-darkBlue', prompt: '' },
+      { id: 'search', label: 'Web Search', icon: <Globe size={18} />, color: 'bg-brand-darkBlue/10 text-brand-darkBlue', prompt: 'Search the web for' },
       { id: 'calc', label: 'Calculator', icon: <Calculator size={18} />, color: 'bg-brand-orange/10 text-brand-orange', prompt: 'Calculate the' },
-      { id: 'concept', label: 'Gen Concept', icon: <Box size={18} />, color: 'bg-brand-blue/10 text-brand-blue', prompt: 'Generate a CAD concept for' },
+      { id: 'concept', label: 'Gen Concept', icon: <Box size={18} />, color: 'bg-brand-darkBlue/10 text-brand-darkBlue', prompt: 'Generate a CAD concept for' },
       { id: 'bom', label: 'Extract BOM', icon: <List size={18} />, color: 'bg-brand-orange/10 text-brand-orange', prompt: 'Extract a Bill of Materials for' },
-      { id: 'specs', label: 'Verify Specs', icon: <Ruler size={18} />, color: 'bg-brand-blue/10 text-brand-blue', prompt: 'Verify the specifications for' },
+      { id: 'specs', label: 'Verify Specs', icon: <Ruler size={18} />, color: 'bg-brand-darkBlue/10 text-brand-darkBlue', prompt: 'Verify the specifications for' },
       { id: 'compliance', label: 'Compliance', icon: <Shield size={18} />, color: 'bg-brand-orange/10 text-brand-orange', prompt: 'Check compliance requirements for' },
   ];
 
@@ -678,23 +679,15 @@ const App: React.FC = () => {
           );
       }
       
-      if (currentView === 'library') {
+      if (currentView === 'workspace') {
           return (
-              <PartsLibrary 
+              <Workspace 
                 parts={libraryParts}
                 onViewPart={handleViewLibraryPart}
                 onToggleFavorite={handleToggleFavorite}
                 onAddComponent={() => setIsAddLibraryPartOpen(true)}
-              />
-          );
-      }
-
-      if (currentView === 'saved-boms') {
-          return (
-              <SavedBomsView 
-                boms={savedBoms}
+                savedBoms={savedBoms}
                 onOpenBom={(bom) => {
-                    // Logic to open BOM
                     setCurrentArtifact({
                         id: bom.id,
                         type: ArtifactType.BOM,
@@ -707,13 +700,6 @@ const App: React.FC = () => {
                 onDeleteBom={(id) => {
                     setSavedBoms(prev => prev.filter(b => b.id !== id));
                 }}
-              />
-          );
-      }
-
-      if (currentView === 'documents') {
-          return (
-              <DocumentCenter 
                 documents={libraryDocuments}
                 onDeleteDocument={(id) => {
                     setLibraryDocuments(prev => prev.filter(d => d.id !== id));
@@ -741,27 +727,27 @@ const App: React.FC = () => {
                 <div className="flex-1 overflow-y-auto custom-scrollbar px-4 pt-4 pb-48">
                 {messages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full max-w-2xl mx-auto text-center opacity-0 animate-fade-in" style={{animation: 'fadeIn 0.5s forwards'}}>
-                        <div className="w-16 h-16 bg-white rounded-2xl mb-6 flex items-center justify-center shadow-sm border border-brand-blue/10">
-                            <span className="font-serif text-3xl font-bold text-brand-blue">B</span>
+                        <div className="w-16 h-16 bg-white rounded-2xl mb-6 flex items-center justify-center shadow-sm border border-brand-darkBlue/10">
+                            <span className="font-serif text-3xl font-bold text-brand-darkBlue">B</span>
                         </div>
                         <h1 className="font-serif font-medium text-3xl text-brand-darkBlue mb-4">
                             {activePillar === 'concept' ? 'Concept Formation' : 
                             activePillar === 'sourcing' ? 'Sourcing Intelligence' : 
-                            'Engineering Copilot'}
+                            'AI Sourcing Copilot'}
                         </h1>
                         <p className="text-gray-500 mb-10 max-w-md text-lg font-light leading-relaxed">
                         {activePillar === 'concept' ? 'Describe a mechanical problem, and I will generate 3D concepts and specifications.' : 
                             activePillar === 'sourcing' ? 'Manage your supply chain, find components, and optimize your Bill of Materials.' : 
-                            'Your general assistant for design reviews, calculations, and documentation.'}
+                            'Locally hosted AI workspace that helps mechanical engineers find parts, verify with data, and run calculations.'}
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl">
                             {getEmptyStateSuggestions().map((suggestion, idx) => (
                                 <button 
                                     key={idx}
                                     onClick={() => handleSendMessage(suggestion.prompt)} 
-                                    className="flex items-center gap-4 p-4 bg-white border border-brand-blue/10 rounded-xl text-left transition-all hover:border-brand-blue/30 hover:shadow-md hover:-translate-y-0.5 group"
+                                    className="flex items-center gap-4 p-4 bg-white border border-brand-darkBlue/10 rounded-xl text-left transition-all hover:border-brand-darkBlue/30 hover:shadow-md hover:-translate-y-0.5 group"
                                 >
-                                    <div className="p-2.5 bg-brand-lightBlue/50 rounded-lg text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                                    <div className="p-2.5 bg-brand-lightBlue/50 rounded-lg text-brand-darkBlue group-hover:bg-brand-darkBlue group-hover:text-white transition-colors">
                                         {suggestion.icon}
                                     </div>
                                     <div className="flex-1">
@@ -777,14 +763,14 @@ const App: React.FC = () => {
                     {messages.map((msg) => (
                         <div key={msg.id} className={`flex gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         {msg.role === 'model' && (
-                            <div className="w-6 h-6 rounded bg-brand-blue text-white flex-shrink-0 flex items-center justify-center text-xs font-bold mt-1 shadow-sm">
+                            <div className="w-6 h-6 rounded bg-brand-orange text-white flex-shrink-0 flex items-center justify-center text-xs font-bold mt-1 shadow-sm">
                             B
                             </div>
                         )}
                         
                         <div className={`flex flex-col max-w-[85%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                             {msg.role === 'user' ? (
-                                <div className="bg-brand-lightBlue/50 text-brand-darkBlue px-5 py-3 rounded-2xl rounded-tr-sm text-[16px] leading-relaxed font-serif tracking-tight shadow-sm border border-brand-blue/10">
+                                <div className="bg-brand-darkBlue text-white px-5 py-3 rounded-2xl rounded-tr-sm text-[16px] leading-relaxed font-serif tracking-tight shadow-sm border border-brand-darkBlue/10">
                                     {msg.text}
                                 </div>
                             ) : (
@@ -793,7 +779,7 @@ const App: React.FC = () => {
                                     {msg.relatedArtifactId && (
                                         <button 
                                             onClick={() => setIsArtifactPanelOpen(true)}
-                                            className="mt-3 flex items-center gap-2 text-xs font-bold text-brand-orange hover:text-orange-600 bg-brand-orange/10 px-3 py-2 rounded-lg border border-brand-orange/20 transition-colors"
+                                            className="mt-3 flex items-center gap-2 text-xs font-bold text-brand-orange hover:text-brand-orange/80 bg-brand-orange/10 px-3 py-2 rounded-lg border border-brand-orange/20 transition-colors"
                                         >
                                             <PanelRightOpen size={14} />
                                             View Generated Artifact
@@ -807,11 +793,11 @@ const App: React.FC = () => {
                     ))}
                     {isLoading && (
                         <div className="flex gap-4">
-                            <div className="w-6 h-6 rounded bg-brand-blue text-white flex-shrink-0 flex items-center justify-center text-xs font-bold mt-1 shadow-sm">B</div>
+                            <div className="w-6 h-6 rounded bg-brand-orange text-white flex-shrink-0 flex items-center justify-center text-xs font-bold mt-1 shadow-sm">B</div>
                             <div className="flex items-center gap-1 mt-3">
-                                <div className="w-2 h-2 bg-brand-blue/30 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
-                                <div className="w-2 h-2 bg-brand-blue/30 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                                <div className="w-2 h-2 bg-brand-blue/30 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+                                <div className="w-2 h-2 bg-brand-orange/50 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+                                <div className="w-2 h-2 bg-brand-orange/50 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                                <div className="w-2 h-2 bg-brand-orange/50 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
                             </div>
                         </div>
                     )}
@@ -825,7 +811,7 @@ const App: React.FC = () => {
                     <div className="max-w-3xl mx-auto pointer-events-auto">
                         {/* Tool Menu Popover */}
                         {isToolMenuOpen && (
-                            <div ref={toolMenuRef} className="absolute bottom-full left-0 mb-4 w-72 bg-white rounded-2xl shadow-2xl border border-brand-blue/10 overflow-hidden animate-in slide-in-from-bottom-2 zoom-in-95 duration-200 z-50">
+                            <div ref={toolMenuRef} className="absolute bottom-full left-0 mb-4 w-72 bg-white rounded-2xl shadow-2xl border border-brand-darkBlue/10 overflow-hidden animate-in slide-in-from-bottom-2 zoom-in-95 duration-200 z-50">
                                 <div className="p-3 border-b border-gray-100 bg-brand-lightBlue/30 text-[10px] font-bold text-brand-darkBlue/50 uppercase tracking-wider">
                                     Engineering Tools
                                 </div>
@@ -846,13 +832,13 @@ const App: React.FC = () => {
                             </div>
                         )}
 
-                        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-brand-blue/10 overflow-hidden transition-all focus-within:ring-2 focus-within:ring-brand-blue/10 focus-within:border-brand-blue/30 relative">
+                        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-brand-darkBlue/10 overflow-hidden transition-all focus-within:ring-2 focus-within:ring-brand-darkBlue/10 focus-within:border-brand-darkBlue/30 relative">
                              {/* Attachments Area */}
                             {(attachedFiles.length > 0 || imageAttachment) && (
                                 <div className="flex gap-2 p-3 pb-0 overflow-x-auto">
                                     {attachedFiles.map((file, i) => (
-                                        <div key={i} className="flex items-center gap-2 bg-brand-lightBlue/30 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-700 animate-in fade-in zoom-in duration-200 border border-brand-blue/10">
-                                            <FileText size={12} className="text-brand-blue/50" />
+                                        <div key={i} className="flex items-center gap-2 bg-brand-lightBlue/30 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-700 animate-in fade-in zoom-in duration-200 border border-brand-darkBlue/10">
+                                            <FileText size={12} className="text-brand-darkBlue/50" />
                                             {file}
                                             <button onClick={() => setAttachedFiles(prev => prev.filter(f => f !== file))} className="text-gray-400 hover:text-red-500">
                                                 <XCircle size={14} />
@@ -878,7 +864,7 @@ const App: React.FC = () => {
                             <div className="flex items-end p-2">
                                 <button 
                                     onClick={() => setIsToolMenuOpen(!isToolMenuOpen)}
-                                    className={`p-2.5 rounded-xl transition-all mr-2 flex-shrink-0 ${isToolMenuOpen ? 'bg-brand-lightBlue text-brand-blue rotate-45' : 'text-gray-400 hover:bg-brand-lightBlue/50 hover:text-brand-blue'}`}
+                                    className={`p-2.5 rounded-xl transition-all mr-2 flex-shrink-0 ${isToolMenuOpen ? 'bg-brand-lightBlue text-brand-darkBlue rotate-45' : 'text-gray-400 hover:bg-brand-lightBlue/50 hover:text-brand-darkBlue'}`}
                                     title="Add Tool / Action"
                                 >
                                     <Plus size={20} />
@@ -897,7 +883,7 @@ const App: React.FC = () => {
                                 <div className="flex items-center gap-2 pb-1.5 pl-2">
                                     <button 
                                         onClick={handleFileUpload}
-                                        className="p-2 text-gray-400 hover:text-brand-blue rounded-lg hover:bg-brand-lightBlue/30 transition-colors"
+                                        className="p-2 text-gray-400 hover:text-brand-darkBlue rounded-lg hover:bg-brand-lightBlue/30 transition-colors"
                                         title="Attach Context"
                                     >
                                         <Paperclip size={18} />
@@ -905,7 +891,7 @@ const App: React.FC = () => {
                                     <button 
                                         onClick={() => handleSendMessage()}
                                         disabled={(!input.trim() && attachedFiles.length === 0 && !imageAttachment) || isLoading}
-                                        className={`p-2 rounded-lg transition-all duration-200 ${input.trim() || attachedFiles.length > 0 || imageAttachment ? 'bg-brand-orange text-white shadow-md hover:bg-orange-400' : 'bg-brand-lightBlue/50 text-brand-blue/30'}`}
+                                        className={`p-2 rounded-lg transition-all duration-200 ${input.trim() || attachedFiles.length > 0 || imageAttachment ? 'bg-brand-orange text-white shadow-md hover:bg-brand-orange/90' : 'bg-brand-lightBlue/50 text-brand-darkBlue/30'}`}
                                     >
                                         <ArrowRight size={18} />
                                     </button>
@@ -920,7 +906,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-brand-gray text-brand-darkBlue font-sans selection:bg-brand-orange/20">
+    <div className="flex h-screen w-full overflow-hidden bg-white text-brand-darkBlue font-sans selection:bg-brand-orange/20">
       {showOnboarding && <OnboardingModal onComplete={handleOnboardingComplete} />}
       {showTutorial && <TutorialOverlay onComplete={() => setShowTutorial(false)} />}
       
@@ -973,9 +959,7 @@ const App: React.FC = () => {
         onPillarChange={(p) => { setActivePillar(p); setCurrentView('chat'); setIsSidebarOpen(false); }}
         activeView={currentView}
         onOpenDashboard={() => { setCurrentView('dashboard'); setIsSidebarOpen(false); }}
-        onOpenLibrary={() => { setCurrentView('library'); setIsSidebarOpen(false); }}
-        onOpenSavedBoms={() => { setCurrentView('saved-boms'); setIsSidebarOpen(false); }}
-        onOpenDocumentCenter={() => { setCurrentView('documents'); setIsSidebarOpen(false); }}
+        onOpenWorkspace={() => { setCurrentView('workspace'); setIsSidebarOpen(false); }}
         onOpenSettings={() => setIsSettingsOpen(true)}
         recentProjects={MOCK_PROJECTS}
         onOpenProject={(id) => { handleOpenProject(id); setIsSidebarOpen(false); }}
@@ -997,12 +981,23 @@ const App: React.FC = () => {
             {currentView === 'chat' && currentArtifact && (
                 <button 
                     onClick={() => setIsArtifactPanelOpen(!isArtifactPanelOpen)}
-                    className={`p-1.5 rounded-lg ${isArtifactPanelOpen ? 'text-brand-blue bg-brand-lightBlue' : 'text-gray-400'}`}
+                    className={`p-1.5 rounded-lg ${isArtifactPanelOpen ? 'text-brand-darkBlue bg-brand-lightBlue' : 'text-gray-400'}`}
                 >
                     <Box size={20} />
                 </button>
             )}
         </div>
+
+        {/* Desktop Sidebar Toggle (when closed) */}
+        {!isSidebarOpen && (
+            <button 
+                onClick={() => setIsSidebarOpen(true)}
+                className="hidden md:flex absolute top-6 left-6 z-20 bg-white border border-gray-200 shadow-lg p-2.5 rounded-xl text-gray-500 hover:text-brand-darkBlue hover:border-brand-darkBlue transition-all"
+                title="Open Sidebar"
+            >
+                <ChevronRight size={20} />
+            </button>
+        )}
 
         {renderMainView()}
 
@@ -1038,7 +1033,7 @@ const App: React.FC = () => {
           <div className="absolute top-6 right-6 z-20">
               <button 
                 onClick={() => setIsArtifactPanelOpen(true)}
-                className="bg-white border border-gray-200 shadow-lg p-2.5 rounded-xl text-gray-500 hover:text-brand-blue hover:border-brand-blue transition-all"
+                className="bg-white border border-gray-200 shadow-lg p-2.5 rounded-xl text-gray-500 hover:text-brand-darkBlue hover:border-brand-darkBlue transition-all"
               >
                   <PanelRightOpen size={20} />
               </button>

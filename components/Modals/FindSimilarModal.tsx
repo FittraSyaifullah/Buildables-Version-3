@@ -28,7 +28,7 @@ export const FindSimilarModal: React.FC<FindSimilarModalProps> = ({ part, onClos
         <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
             <div>
                 <h3 className="font-bold text-lg text-brand-darkBlue">Find Similar</h3>
-                <p className="text-sm text-gray-500">Find similar parts using <span className="font-mono font-bold text-brand-blue">"{part.partNumber}"</span> info:</p>
+                <p className="text-sm text-gray-500">Find similar parts using <span className="font-mono font-bold text-brand-darkBlue">"{part.partNumber}"</span> info:</p>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full text-gray-400 transition-colors">
                 <X size={20} />
@@ -40,7 +40,7 @@ export const FindSimilarModal: React.FC<FindSimilarModalProps> = ({ part, onClos
             <div className="grid grid-cols-2 gap-x-8 gap-y-3">
                 {Object.entries(part.specs).map(([key, value]) => (
                     <label key={key} className="flex items-center gap-3 p-2 rounded hover:bg-brand-lightBlue/10 cursor-pointer group transition-colors">
-                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${selectedParams.includes(key) ? 'bg-brand-blue border-brand-blue' : 'border-gray-300 bg-white group-hover:border-brand-blue'}`}>
+                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${selectedParams.includes(key) ? 'bg-brand-darkBlue border-brand-darkBlue' : 'border-gray-300 bg-white group-hover:border-brand-darkBlue'}`}>
                             {selectedParams.includes(key) && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                         </div>
                         <input 
@@ -67,7 +67,7 @@ export const FindSimilarModal: React.FC<FindSimilarModalProps> = ({ part, onClos
                 onClick={() => onFind(selectedParams)}
                 disabled={selectedParams.length === 0}
                 className={`px-6 py-2 text-sm font-bold text-white rounded-lg flex items-center gap-2 transition-all ${
-                    selectedParams.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-brand-blue hover:bg-blue-700 shadow-md'
+                    selectedParams.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-brand-darkBlue hover:bg-blue-700 shadow-md'
                 }`}
             >
                 <Search size={16} />

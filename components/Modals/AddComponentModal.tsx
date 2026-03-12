@@ -83,7 +83,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({
               onClick={() => setSourcing('off_the_shelf')}
               className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all ${
                 sourcing === 'off_the_shelf' 
-                  ? 'bg-blue-50 border-blue-200 text-blue-700 ring-1 ring-blue-200' 
+                  ? 'bg-brand-lightBlue border-brand-darkBlue/30 text-brand-darkBlue ring-1 ring-brand-darkBlue/30' 
                   : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'
               }`}
             >
@@ -99,7 +99,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({
                 required 
                 value={name} 
                 onChange={e => setName(e.target.value)} 
-                className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" 
+                className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-darkBlue/20 focus:border-brand-darkBlue transition-all" 
                 placeholder="e.g. Mounting Plate" 
             />
           </div>
@@ -110,9 +110,19 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({
                 required 
                 value={category} 
                 onChange={e => setCategory(e.target.value)} 
-                className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" 
-                placeholder="e.g. Structural" 
+                list="category-options"
+                className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-darkBlue/20 focus:border-brand-darkBlue transition-all" 
+                placeholder="e.g. Structural or type your own" 
             />
+            <datalist id="category-options">
+                <option value="Structural" />
+                <option value="Electronics" />
+                <option value="Fasteners" />
+                <option value="Pneumatics" />
+                <option value="Motors" />
+                <option value="Sensors" />
+                <option value="Hardware" />
+            </datalist>
           </div>
 
           {sourcing === 'custom_manufactured' ? (
@@ -122,7 +132,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({
                   required 
                   value={specs} 
                   onChange={e => setSpecs(e.target.value)} 
-                  className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all resize-none" 
+                  className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-darkBlue/20 focus:border-brand-darkBlue transition-all resize-none" 
                   rows={3} 
                   placeholder="e.g. Aluminum 6061, 5mm thickness, CNC machined" 
               />
@@ -139,7 +149,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({
                       required 
                       value={supplier} 
                       onChange={e => setSupplier(e.target.value)} 
-                      className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all bg-white" 
+                      className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-darkBlue/20 focus:border-brand-darkBlue transition-all bg-white" 
                       placeholder="e.g. DigiKey" 
                   />
                 </div>
@@ -149,7 +159,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({
                         required 
                         value={mpn} 
                         onChange={e => setMpn(e.target.value)} 
-                        className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all bg-white" 
+                        className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-darkBlue/20 focus:border-brand-darkBlue transition-all bg-white" 
                         placeholder="e.g. 17HS4401" 
                     />
                  </div>
@@ -162,7 +172,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({
                       required 
                       value={unitCost} 
                       onChange={e => setUnitCost(e.target.value)} 
-                      className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all bg-white" 
+                      className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-darkBlue/20 focus:border-brand-darkBlue transition-all bg-white" 
                       placeholder="e.g. $12.50" 
                   />
                 </div>
@@ -172,7 +182,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({
                         required 
                         value={leadTime} 
                         onChange={e => setLeadTime(e.target.value)} 
-                        className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all bg-white" 
+                        className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-darkBlue/20 focus:border-brand-darkBlue transition-all bg-white" 
                         placeholder="e.g. 3 days" 
                     />
                  </div>
@@ -187,7 +197,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({
              <textarea 
                   value={notes} 
                   onChange={e => setNotes(e.target.value)} 
-                  className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all resize-none" 
+                  className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-darkBlue/20 focus:border-brand-darkBlue transition-all resize-none" 
                   rows={2} 
                   placeholder="Why was this component selected?" 
               />
@@ -195,7 +205,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({
 
           <button 
             type="submit" 
-            className="w-full py-2.5 bg-brand-blue text-white rounded-lg font-bold text-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-sm mt-2"
+            className="w-full py-2.5 bg-brand-orange text-white rounded-lg font-bold text-sm hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 shadow-sm mt-2"
           >
             <Plus size={16} /> {submitLabel}
           </button>
