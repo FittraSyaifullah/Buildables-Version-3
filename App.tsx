@@ -1,13 +1,14 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Sidebar } from './components/Sidebar';
-import { Send, Paperclip, ChevronRight, X, PanelRightClose, PanelRightOpen, ArrowRight, Sparkles, FileText, XCircle, Box, Cpu, Shield, Layers, List, Search, AlertTriangle, DollarSign, Eye, Scale, Calculator, Plus, Wrench, Zap, Globe, Ruler, Camera, ImageIcon } from 'lucide-react';
-import { sendMessageToGemini } from './services/geminiService';
-import { Message, ArtifactData, ArtifactType, UserContext, Pillar, AppSettings, ProjectSummary, ComponentDetailData, ComparisonPart, LibraryPart, SavedBom, LibraryDocument } from './types';
+import { Send, Paperclip, ChevronRight, X, PanelRightClose, PanelRightOpen, ArrowRight, Sparkles, FileText, XCircle, Box, Cpu, Shield, Layers, List, Search, AlertTriangle, DollarSign, Eye, Scale, Calculator, Plus, Wrench, Zap, Globe, Ruler, Camera, ImageIcon, ShieldAlert } from 'lucide-react';
+import { sendMessageToGemini, lintCanvas } from './services/geminiService';
+import { Message, ArtifactData, ArtifactType, UserContext, Pillar, AppSettings, ProjectSummary, ComponentDetailData, ComparisonPart, LibraryPart, SavedBom, LibraryDocument, CanvasLintResult } from './types';
 import { BomView } from './components/Artifacts/BomView';
 import { CadView } from './components/Artifacts/CadView';
 import { DocumentView } from './components/Artifacts/DocumentView';
 import { ParametricPartView } from './components/Artifacts/ParametricPartView';
+import { DfmValidationView } from './components/Artifacts/DfmValidationView';
 import { PartsLibrary } from './components/PartsLibrary';
 import { FindSimilarModal } from './components/Modals/FindSimilarModal';
 import { ComparePartsModal } from './components/Modals/ComparePartsModal';
@@ -19,6 +20,9 @@ import { TutorialOverlay } from './components/TutorialOverlay';
 import { SavedBomsView } from './components/SavedBomsView';
 import { DocumentCenter } from './components/DocumentCenter';
 import { Workspace } from './components/Workspace';
+import { useNodesState, useEdgesState, addEdge, ReactFlowProvider } from '@xyflow/react';
+import { ConceptCanvas } from './components/Concept/ConceptCanvas';
+import { ProposalOverlay } from './components/Concept/ProposalOverlay';
 import Markdown from 'react-markdown';
 
 // Mock Data for Dashboard
@@ -215,6 +219,135 @@ const MOCK_SAVED_BOMS: SavedBom[] = [
     }
 ];
 
+// Initial Concept Data
+const initialConceptNodes = [
+  {
+    id: '1',
+    type: 'concept',
+    position: { x: 250, y: 5 },
+    data: { 
+      label: 'Main Chassis', 
+      type: 'subsystem', 
+      description: 'Primary structural frame for the robotic assembly.',
+      status: 'validated',
+      specs: {
+        "Material": "AL 6061-T6",
+        "Weight": "1.2kg",
+        "Finish": "Anodized Black"
+      },
+      history: [
+        { timestamp: Date.now() - 86400000, author: "John Doe", change: "Initial design draft" },
+        { timestamp: Date.now() - 3600000, author: "Jane Smith", change: "Validated material specs" }
+      ],
+      libraryLinks: [
+        { name: "Structural Frame Library", url: "#", provider: "Internal" }
+      ]
+    },
+  },
+  {
+    id: '2',
+    type: 'concept',
+    position: { x: 100, y: 150 },
+    data: { 
+      label: 'Power Distribution', 
+      type: 'subsystem', 
+      description: 'Manages 24V and 5V rails for logic and motors.',
+      status: 'draft',
+      specs: {
+        "Input": "24V DC",
+        "Efficiency": "94%",
+        "Max Current": "20A"
+      },
+      history: [
+        { timestamp: Date.now() - 43200000, author: "John Doe", change: "Added power rail requirements" }
+      ],
+      libraryLinks: [
+        { name: "BMS Reference Design", url: "#", provider: "Texas Instruments" }
+      ]
+    },
+  },
+  {
+    id: '3',
+    type: 'concept',
+    position: { x: 400, y: 150 },
+    data: { 
+      label: 'Motor Controller', 
+      type: 'concept', 
+      description: 'Dual-channel brushless driver with CAN interface.',
+      status: 'draft',
+      renderUrl: 'https://picsum.photos/seed/motor/400/225',
+      specs: {
+        "Protocol": "CAN 2.0B",
+        "Peak Current": "40A",
+        "Voltage Range": "12-48V"
+      },
+      history: [
+        { timestamp: Date.now() - 172800000, author: "Jane Smith", change: "Selected controller architecture" }
+      ],
+      libraryLinks: [
+        { name: "CAN Controller Library", url: "#", provider: "Mouser" }
+      ]
+    },
+  },
+];
+
+const initialConceptEdges = [
+  { id: 'e1-2', source: '1', target: '2', animated: true },
+  { id: 'e1-3', source: '1', target: '3', animated: true },
+];
+
+const layoutNodesByCategory = (nodes: any[]) => {
+  const categories = ['requirement', 'subsystem', 'component', 'constraint'];
+  const columnWidth = 400;
+  const rowHeight = 220;
+  const padding = 80;
+
+  // Filter out any existing group nodes to avoid duplicates and ensure nodes are valid
+  const conceptNodes = nodes.filter(n => n && n.type === 'concept');
+  
+  const categoryMap: Record<string, any[]> = {};
+  conceptNodes.forEach(node => {
+    if (!node) return;
+    const type = node.data?.type || 'component';
+    if (!categoryMap[type]) categoryMap[type] = [];
+    categoryMap[type].push(node);
+  });
+
+  const groupNodes = categories.map((cat, idx) => {
+    const nodesInCat = categoryMap[cat] || [];
+    const height = Math.max(1, nodesInCat.length) * rowHeight + 100;
+    return {
+      id: `group-${cat}`,
+      type: 'group',
+      data: { label: cat.charAt(0).toUpperCase() + cat.slice(1) + 's' },
+      position: { x: idx * columnWidth + padding - 20, y: padding - 60 },
+      style: { width: columnWidth - 40, height: height },
+      draggable: true,
+    };
+  });
+
+  const positionedNodes = conceptNodes.map(node => {
+    if (!node) return null;
+    const type = node.data?.type || 'component';
+    const categoryIndex = categories.indexOf(type);
+    
+    const nodesInCat = categoryMap[type] || [];
+    const rowIndex = nodesInCat.indexOf(node);
+
+    return {
+      ...node,
+      parentId: `group-${type}`,
+      extent: 'parent',
+      position: {
+        x: 20,
+        y: rowIndex * rowHeight + 80
+      }
+    };
+  }).filter(Boolean);
+
+  return [...groupNodes, ...positionedNodes];
+};
+
 const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -238,11 +371,148 @@ const App: React.FC = () => {
   // Documents State
   const [libraryDocuments, setLibraryDocuments] = useState<LibraryDocument[]>(MOCK_DOCUMENTS);
   
+  // Concept Canvas State
+  const [nodes, setNodes, onNodesChange] = useNodesState(layoutNodesByCategory(initialConceptNodes) as any[]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialConceptEdges);
+  const [isConceptGenerating, setIsConceptGenerating] = useState(false);
+  const [canvasTitle, setCanvasTitle] = useState<string>('Hardware Architecture');
+  const [isLinting, setIsLinting] = useState(false);
+  const [lintResults, setLintResults] = useState<CanvasLintResult | null>(null);
+
+  const onConnect = useCallback(
+    (params: any) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges],
+  );
+
+  const handleGenerateConceptNode = async (prompt: string) => {
+    setIsConceptGenerating(true);
+    setLintResults(null); // Clear previous lint results when generating
+    
+    try {
+      const history = messages.map(m => ({
+        role: m.role,
+        parts: [{ text: m.text }]
+      }));
+
+      const response = await sendMessageToGemini(history, prompt, userContext);
+      
+      // Add to messages so it's tracked in history
+      const userMsg: Message = {
+        id: crypto.randomUUID(),
+        role: 'user',
+        text: prompt,
+        timestamp: Date.now(),
+      };
+      
+      const modelMsg: Message = {
+        id: crypto.randomUUID(),
+        role: 'model',
+        text: response.text,
+        timestamp: Date.now(),
+        relatedArtifactId: response.artifact?.id
+      };
+
+      setMessages(prev => [...prev, userMsg, modelMsg]);
+
+      if (response.artifact && response.artifact.type === ArtifactType.CONCEPT_CANVAS) {
+          if (response.artifact.title) {
+            setCanvasTitle(response.artifact.title);
+          }
+          const { nodes: newNodes, edges: newEdges } = response.artifact.content;
+          if (newNodes) {
+              const processedNodes = newNodes.map((n: any) => ({
+                  ...n,
+                  id: n.id || crypto.randomUUID(),
+                  type: 'concept',
+                  data: {
+                      ...n,
+                      label: n.label || 'New Node',
+                      type: n.type || 'component',
+                      status: n.status || 'draft',
+                      history: n.history || [{ timestamp: Date.now(), author: "AI Copilot", change: "Generated from canvas" }]
+                  }
+              }));
+              setNodes(prev => {
+                const nodeMap = new Map();
+                prev.filter(n => n.type === 'concept').forEach(n => nodeMap.set(n.id, n));
+                processedNodes.forEach(n => {
+                  const existing = nodeMap.get(n.id);
+                  nodeMap.set(n.id, { ...existing, ...n, data: { ...existing?.data, ...n.data } });
+                });
+                return layoutNodesByCategory(Array.from(nodeMap.values()));
+              });
+          }
+          if (newEdges) {
+              setEdges(prev => {
+                const edgeMap = new Map();
+                prev.forEach(e => edgeMap.set(e.id, e));
+                newEdges.forEach((e: any) => {
+                  const id = e.id || `${e.source}-${e.target}`;
+                  edgeMap.set(id, { ...e, id });
+                });
+                return Array.from(edgeMap.values());
+              });
+          }
+      }
+    } catch (error) {
+      console.error("Failed to generate concept node:", error);
+    } finally {
+      setIsConceptGenerating(false);
+    }
+  };
+
+  const handleLintCanvas = async () => {
+    if (nodes.length === 0 || isLinting) return;
+    
+    setIsLinting(true);
+    try {
+      // Prepare nodes for linting (remove internal React Flow props)
+      const nodesForLint = nodes.filter(n => n.type === 'concept').map(n => ({
+        id: n.id,
+        label: n.data.label,
+        type: n.data.type,
+        description: n.data.description,
+        specs: n.data.specs
+      }));
+      
+      const edgesForLint = edges.map(e => ({
+        source: e.source,
+        target: e.target,
+        label: (e as any).label
+      }));
+
+      const results = await lintCanvas(nodesForLint, edgesForLint, userContext);
+      setLintResults(results);
+      
+      if (results.status === 'conflict') {
+        // Add a message to the chat about the conflicts
+        const modelMsg: Message = {
+          id: crypto.randomUUID(),
+          role: 'model',
+          text: `I've analyzed your architecture and found ${results.red_wires?.length || 0} potential conflicts. Check the canvas for details.`,
+          timestamp: Date.now(),
+        };
+        setMessages(prev => [...prev, modelMsg]);
+      }
+    } catch (error) {
+      console.error("Linting failed", error);
+    } finally {
+      setIsLinting(false);
+    }
+  };
+
+  const handleApplySuggestion = (suggestion: any) => {
+    // This is a simplified implementation - in a real app, this would trigger a more complex generation
+    handleGenerateConceptNode(suggestion.suggestion_text);
+    setLintResults(null);
+  };
+
   // Image Search State
   const [imageAttachment, setImageAttachment] = useState<string | null>(null);
   
   // Navigation State
-  const [currentView, setCurrentView] = useState<'chat' | 'dashboard' | 'workspace'>('chat');
+  const [currentView, setCurrentView] = useState<'chat' | 'dashboard' | 'workspace' | 'concept'>('chat');
+  const [isProposalOpen, setIsProposalOpen] = useState(false);
   
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -264,6 +534,7 @@ const App: React.FC = () => {
   const toolMenuRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -287,20 +558,20 @@ const App: React.FC = () => {
   const handleSendMessage = async (text: string = input) => {
     if ((!text.trim() && attachedFiles.length === 0 && !imageAttachment) || isLoading) return;
 
-    let fullText = text;
-    if (attachedFiles.length > 0) {
-        fullText += `\n\n[Attached Context Files: ${attachedFiles.join(', ')}]`;
-    }
-    
     const userMsg: Message = {
       id: crypto.randomUUID(),
       role: 'user',
-      text: fullText,
-      timestamp: Date.now()
+      text: text,
+      timestamp: Date.now(),
+      attachments: attachedFiles.length > 0 ? [...attachedFiles] : undefined,
+      imageAttachment: imageAttachment || undefined
     };
 
     setMessages(prev => [...prev, userMsg]);
     setInput('');
+    if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+    }
     setAttachedFiles([]); 
     
     const currentImage = imageAttachment;
@@ -328,7 +599,53 @@ const App: React.FC = () => {
 
     if (response.artifact) {
       setCurrentArtifact(response.artifact);
-      setIsArtifactPanelOpen(true);
+      
+      // Auto-navigate for Concept Canvas
+      if (response.artifact && response.artifact.type === ArtifactType.CONCEPT_CANVAS) {
+          if (response.artifact.title) {
+            setCanvasTitle(response.artifact.title);
+          }
+          const { nodes: newNodes, edges: newEdges } = response.artifact.content;
+          if (newNodes) {
+              // Ensure unique IDs and proper formatting
+              const processedNodes = newNodes.map((n: any) => ({
+                  ...n,
+                  id: n.id || crypto.randomUUID(),
+                  type: 'concept', // ReactFlow node type
+                  data: {
+                      ...n,
+                      label: n.label || 'New Node',
+                      type: n.type || 'component', // Domain type
+                      status: n.status || 'draft',
+                      history: n.history || [{ timestamp: Date.now(), author: "AI Copilot", change: "Generated" }]
+                  }
+              }));
+              
+              setNodes(prev => {
+                const nodeMap = new Map();
+                prev.filter(n => n.type === 'concept').forEach(n => nodeMap.set(n.id, n));
+                processedNodes.forEach(n => {
+                  const existing = nodeMap.get(n.id);
+                  nodeMap.set(n.id, { ...existing, ...n, data: { ...existing?.data, ...n.data } });
+                });
+                return layoutNodesByCategory(Array.from(nodeMap.values()));
+              });
+          }
+          if (newEdges) {
+              setEdges(prev => {
+                const edgeMap = new Map();
+                prev.forEach(e => edgeMap.set(e.id, e));
+                newEdges.forEach((e: any) => {
+                  const id = e.id || `${e.source}-${e.target}`;
+                  edgeMap.set(id, { ...e, id });
+                });
+                return Array.from(edgeMap.values());
+              });
+          }
+          setCurrentView('concept');
+      } else {
+          setIsArtifactPanelOpen(true);
+      }
     }
   };
 
@@ -339,12 +656,16 @@ const App: React.FC = () => {
     }
   };
 
-  const handleNewChat = () => {
-    setActivePillar('copilot'); // Keep a default for internal state if needed
+  const handleNewChat = (pillar: Pillar = 'copilot') => {
+    setActivePillar(pillar);
     setMessages([]);
     setCurrentArtifact(null);
     setIsArtifactPanelOpen(false);
-    setCurrentView('chat');
+    if (pillar === 'concept') {
+        setCurrentView('concept');
+    } else {
+        setCurrentView('chat');
+    }
     setIsSidebarOpen(false);
   };
 
@@ -391,6 +712,9 @@ const App: React.FC = () => {
     const proj = MOCK_PROJECTS.find(p => p.id === id);
     if(proj) {
         setActivePillar(proj.pillar);
+        if (proj.pillar === 'concept') {
+            setCurrentView('concept');
+        }
         setMessages([{
             id: 'mock-load',
             role: 'user',
@@ -406,9 +730,15 @@ const App: React.FC = () => {
   };
 
   const handleFileUpload = () => {
-      const mockFiles = ['datasheet_motor_v2.pdf', 'requirements.docx'];
-      const randomFile = mockFiles[Math.floor(Math.random() * mockFiles.length)];
-      setAttachedFiles(prev => [...prev, randomFile]);
+      fileInputRef.current?.click();
+  };
+  
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+          const newFiles = Array.from(e.target.files).map(f => f.name);
+          setAttachedFiles(prev => [...prev, ...newFiles]);
+          e.target.value = ''; // Reset input
+      }
   };
   
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -537,6 +867,10 @@ const App: React.FC = () => {
   const handleToolSelect = (toolId: string, prompt: string) => {
       if (toolId === 'img-search') {
           imageInputRef.current?.click();
+          setIsToolMenuOpen(false);
+      } else if (toolId === 'lint' && currentView === 'concept') {
+          handleLintCanvas();
+          setIsToolMenuOpen(false);
       } else {
           setInput(prev => prev ? prev + " " + prompt : prompt);
           setIsToolMenuOpen(false);
@@ -567,6 +901,8 @@ const App: React.FC = () => {
       case ArtifactType.DOCUMENT:
       case ArtifactType.REVIEW_NOTE:
         return <DocumentView data={currentArtifact.content} />;
+      case ArtifactType.DFM_VALIDATION:
+        return <DfmValidationView data={currentArtifact.content} />;
       default:
         return <div className="p-4">Unknown Artifact Type</div>;
     }
@@ -574,26 +910,10 @@ const App: React.FC = () => {
 
   const getEmptyStateSuggestions = () => {
     return [
-      { 
-          heading: "Concept Formation", 
-          prompt: "Generate a CAD concept for a flexible robotic gripper.", 
-          icon: <Box size={20}/> 
-      },
-      { 
-          heading: "Sourcing & BOM", 
-          prompt: "Turn my CAD model into a sourced, costed, and manufacturing-ready BOM.", 
-          icon: <List size={20}/> 
-      },
-      { 
-          heading: "Engineering Copilot", 
-          prompt: "Review my design against industry standards and manufacturing guidelines.", 
-          icon: <Cpu size={20}/> 
-      },
-      { 
-          heading: "Document Designs", 
-          prompt: "Draft and edit documentation from my designs.", 
-          icon: <FileText size={20}/> 
-      }
+      { heading: "Design Concepts", prompt: "Design a concept architecture for a 6 DOF robotic arm.", icon: <Box size={20}/> },
+      { heading: "Sourcing & BOM", prompt: "Turn my CAD model into a sourced, costed, and manufacturing-ready BOM.", icon: <List size={20}/> },
+      { heading: "AI Copilot", prompt: "Review my design against industry standards and manufacturing guidelines.", icon: <Ruler size={20}/> },
+      { heading: "Run Calculations", prompt: "Calculate the required torque for a robotic arm lifting 5kg at 0.5m.", icon: <Calculator size={20}/> }
     ];
   };
 
@@ -601,9 +921,11 @@ const App: React.FC = () => {
       { id: 'img-search', label: 'Visual Search', icon: <Camera size={18} />, color: 'bg-brand-darkBlue/10 text-brand-darkBlue', prompt: '' },
       { id: 'search', label: 'Web Search', icon: <Globe size={18} />, color: 'bg-brand-darkBlue/10 text-brand-darkBlue', prompt: 'Search the web for' },
       { id: 'calc', label: 'Calculator', icon: <Calculator size={18} />, color: 'bg-brand-orange/10 text-brand-orange', prompt: 'Calculate the' },
-      { id: 'concept', label: 'Gen Concept', icon: <Box size={18} />, color: 'bg-brand-darkBlue/10 text-brand-darkBlue', prompt: 'Generate a CAD concept for' },
+      { id: 'concept', label: 'Gen Concept', icon: <Box size={18} />, color: 'bg-brand-darkBlue/10 text-brand-darkBlue', prompt: 'Design a concept architecture for' },
       { id: 'bom', label: 'Extract BOM', icon: <List size={18} />, color: 'bg-brand-orange/10 text-brand-orange', prompt: 'Extract a Bill of Materials for' },
       { id: 'specs', label: 'Verify Specs', icon: <Ruler size={18} />, color: 'bg-brand-darkBlue/10 text-brand-darkBlue', prompt: 'Verify the specifications for' },
+      { id: 'dfm', label: 'DFM Check', icon: <Wrench size={18} />, color: 'bg-brand-orange/10 text-brand-orange', prompt: 'Perform a DFM check for 3D printing on' },
+      { id: 'lint', label: 'Lint Canvas', icon: <ShieldAlert size={18} />, color: 'bg-red-50 text-red-600', prompt: 'Check for conflicts in my current architecture' },
       { id: 'compliance', label: 'Compliance', icon: <Shield size={18} />, color: 'bg-brand-orange/10 text-brand-orange', prompt: 'Check compliance requirements for' },
   ];
 
@@ -626,6 +948,39 @@ const App: React.FC = () => {
   };
 
   const renderMainView = () => {
+      if (currentView === 'concept') {
+          return (
+            <div className="relative w-full h-full">
+              <ReactFlowProvider>
+                <ConceptCanvas 
+                  title={canvasTitle}
+                  onTitleChange={setCanvasTitle}
+                  nodes={nodes}
+                  edges={edges}
+                  onNodesChange={onNodesChange}
+                  onEdgesChange={onEdgesChange}
+                  onConnect={onConnect}
+                  onGenerateNode={handleGenerateConceptNode}
+                  isGenerating={isConceptGenerating}
+                  onLint={handleLintCanvas}
+                  lintResults={lintResults}
+                  isLinting={isLinting}
+                  onCloseLint={() => setLintResults(null)}
+                  onApplySuggestion={handleApplySuggestion}
+                />
+              </ReactFlowProvider>
+              <button 
+                onClick={() => setIsProposalOpen(true)}
+                className="absolute top-4 right-4 z-50 flex items-center gap-2 bg-brand-darkBlue text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg hover:bg-brand-darkBlue/90 transition-all"
+              >
+                <FileText size={16} />
+                View UX Proposal
+              </button>
+              <ProposalOverlay isOpen={isProposalOpen} onClose={() => setIsProposalOpen(false)} />
+            </div>
+          );
+      }
+
       if (currentView === 'dashboard') {
           return (
             <Dashboard 
@@ -723,21 +1078,53 @@ const App: React.FC = () => {
                         
                         <div className={`flex flex-col max-w-[85%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                             {msg.role === 'user' ? (
-                                <div className="bg-brand-darkBlue text-white px-5 py-3 rounded-2xl rounded-tr-sm text-[16px] leading-relaxed font-serif tracking-tight shadow-sm border border-brand-darkBlue/10">
-                                    {msg.text}
+                                <div className="flex flex-col items-end gap-2">
+                                    {(msg.attachments?.length || msg.imageAttachment) && (
+                                        <div className="flex flex-wrap justify-end gap-2 mb-1">
+                                            {msg.attachments?.map((file, i) => (
+                                                <div key={i} className="flex items-center gap-2 bg-brand-darkBlue/10 px-3 py-1.5 rounded-lg text-xs font-medium text-brand-darkBlue border border-brand-darkBlue/20">
+                                                    <FileText size={12} className="text-brand-darkBlue/70" />
+                                                    {file}
+                                                </div>
+                                            ))}
+                                            {msg.imageAttachment && (
+                                                <div className="h-16 w-16 rounded-lg overflow-hidden border border-brand-darkBlue/20 shadow-sm">
+                                                    <img src={msg.imageAttachment} alt="Attached" className="h-full w-full object-cover" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                    {msg.text && (
+                                        <div className="bg-brand-darkBlue text-white px-5 py-3 rounded-2xl rounded-tr-sm text-[16px] leading-relaxed font-serif tracking-tight shadow-sm border border-brand-darkBlue/10">
+                                            {msg.text}
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="text-brand-darkBlue px-1 py-1 text-[15px] leading-relaxed markdown-body">
                                     <Markdown>{msg.text}</Markdown>
                                     {msg.relatedArtifactId && (
-                                        <button 
-                                            onClick={() => setIsArtifactPanelOpen(true)}
-                                            className="mt-3 flex items-center gap-2 text-xs font-bold text-brand-orange hover:text-brand-orange/80 bg-brand-orange/10 px-3 py-2 rounded-lg border border-brand-orange/20 transition-colors"
-                                        >
-                                            <PanelRightOpen size={14} />
-                                            View Generated Artifact
-                                            <ArrowRight size={12} />
-                                        </button>
+                                        <div className="mt-4">
+                                            <button 
+                                                onClick={() => {
+                                                    if (msg.relatedArtifactId) {
+                                                        const artifact = currentArtifact; // This might be stale if multiple artifacts exist, but for now it works
+                                                        if (artifact?.type === ArtifactType.CONCEPT_CANVAS) {
+                                                            setCurrentView('concept');
+                                                        } else {
+                                                            setIsArtifactPanelOpen(true);
+                                                        }
+                                                    }
+                                                }}
+                                                className="flex items-center gap-3 text-sm font-bold text-brand-darkBlue bg-white hover:bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 shadow-sm transition-all group w-full sm:w-auto"
+                                            >
+                                                <div className="p-1.5 bg-brand-orange/10 text-brand-orange rounded-lg group-hover:bg-brand-orange group-hover:text-white transition-colors">
+                                                    {currentArtifact?.type === ArtifactType.DFM_VALIDATION ? <Wrench size={16} /> : <Box size={16} />}
+                                                </div>
+                                                <span className="flex-1 text-left">View Generated Artifact</span>
+                                                <ArrowRight size={16} className="text-gray-400 group-hover:text-brand-darkBlue transition-colors" />
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             )}
@@ -824,8 +1211,13 @@ const App: React.FC = () => {
                                 </button>
 
                                 <textarea
+                                    ref={textareaRef}
                                     value={input}
-                                    onChange={(e) => setInput(e.target.value)}
+                                    onChange={(e) => {
+                                        setInput(e.target.value);
+                                        e.target.style.height = 'auto';
+                                        e.target.style.height = `${e.target.scrollHeight}px`;
+                                    }}
                                     onKeyDown={handleKeyDown}
                                     placeholder={`Ask Buildables to design, source, or analyze...`}
                                     className="w-full max-h-40 py-3 px-2 resize-none outline-none text-[16px] bg-transparent custom-scrollbar text-brand-darkBlue placeholder-brand-darkBlue/30 font-serif leading-relaxed"
@@ -871,7 +1263,13 @@ const App: React.FC = () => {
       />
       
       {/* Hidden File Inputs */}
-      <input type="file" ref={fileInputRef} className="hidden" />
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        className="hidden" 
+        multiple 
+        onChange={handleFileSelect} 
+      />
       <input 
         type="file" 
         ref={imageInputRef} 
@@ -911,6 +1309,7 @@ const App: React.FC = () => {
         activeView={currentView}
         onOpenDashboard={() => { setCurrentView('dashboard'); setIsSidebarOpen(false); }}
         onOpenWorkspace={() => { setCurrentView('workspace'); setIsSidebarOpen(false); }}
+        onOpenConcept={() => { setCurrentView('concept'); setIsSidebarOpen(false); }}
         onOpenSettings={() => setIsSettingsOpen(true)}
         recentProjects={MOCK_PROJECTS}
         onOpenProject={(id) => { handleOpenProject(id); setIsSidebarOpen(false); }}

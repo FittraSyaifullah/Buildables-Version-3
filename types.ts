@@ -9,7 +9,70 @@ export enum ArtifactType {
   DOCUMENT = 'DOCUMENT',
   REVIEW_NOTE = 'REVIEW_NOTE',
   COMPONENT_DETAIL = 'COMPONENT_DETAIL',
-  SAVED_BOM = 'SAVED_BOM'
+  SAVED_BOM = 'SAVED_BOM',
+  CONCEPT_CANVAS = 'CONCEPT_CANVAS',
+  DFM_VALIDATION = 'DFM_VALIDATION'
+}
+
+export interface DfmValidationData {
+  dfm_status: string;
+  adjustments_made: string[];
+  bambu_a1_slicer_settings: {
+    recommended_material: string;
+    layer_height: number;
+    wall_loops: number;
+    infill_percentage: number;
+    print_orientation: string;
+  };
+  fastening_recommendation: string;
+}
+
+export interface RedWire {
+  source_node_id: string;
+  target_node_id: string;
+  reason: string;
+}
+
+export interface GhostNode {
+  suggested_action: 'Add Node' | 'Modify Node';
+  node_type: 'component' | 'constraint' | 'aesthetic';
+  suggestion_text: string;
+}
+
+export interface CanvasLintResult {
+  status: 'valid' | 'conflict';
+  red_wires?: RedWire[];
+  ghost_nodes?: GhostNode[];
+}
+
+export interface ConceptNodeHistory {
+  timestamp: number;
+  author: string;
+  change: string;
+}
+
+export interface ConceptNodeLibraryLink {
+  name: string;
+  url: string;
+  provider: string;
+}
+
+export interface ConceptNodeData {
+  id: string;
+  type: 'requirement' | 'component' | 'subsystem' | 'constraint';
+  label: string;
+  description?: string;
+  prompt?: string;
+  renderUrl?: string;
+  specs?: Record<string, string>;
+  status: 'draft' | 'validated' | 'conflict';
+  history?: ConceptNodeHistory[];
+  libraryLinks?: ConceptNodeLibraryLink[];
+}
+
+export interface ConceptCanvasData {
+  nodes: any[]; // Using any for compatibility with React Flow Node type if needed, but will define properly in component
+  edges: any[];
 }
 
 export interface ArtifactData {
@@ -25,6 +88,8 @@ export interface Message {
   text: string;
   relatedArtifactId?: string; // If a message triggered an artifact creation
   timestamp: number;
+  attachments?: string[];
+  imageAttachment?: string;
 }
 
 export interface BomItem {

@@ -1,13 +1,14 @@
 
 import React, { useMemo } from 'react';
-import { MessageSquarePlus, Clock, Settings, BookOpen, Database, Cpu, LayoutGrid, Package, X, FileText } from 'lucide-react';
+import { MessageSquarePlus, Clock, Settings, BookOpen, Database, Cpu, LayoutGrid, Package, X, FileText, Layout } from 'lucide-react';
 import { Pillar, ProjectSummary } from '../types';
 
 interface SidebarProps {
-  onNewChat: () => void;
-  activeView: 'chat' | 'dashboard' | 'workspace';
+  onNewChat: (pillar?: Pillar) => void;
+  activeView: 'chat' | 'dashboard' | 'workspace' | 'concept';
   onOpenDashboard: () => void;
   onOpenWorkspace: () => void;
+  onOpenConcept: () => void;
   onOpenSettings: () => void;
   recentProjects: ProjectSummary[];
   onOpenProject: (id: string) => void;
@@ -20,6 +21,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeView,
   onOpenDashboard,
   onOpenWorkspace,
+  onOpenConcept,
   onOpenSettings,
   recentProjects,
   onOpenProject,
@@ -119,6 +121,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
               >
                   <Database size={18} strokeWidth={1.5} /> Project Knowledge
               </button>
+              <button 
+                onClick={() => { onOpenConcept(); }}
+                className={getViewButtonClass('concept')}
+              >
+                  <Layout size={18} strokeWidth={1.5} /> Concept Canvas
+              </button>
+          </div>
+
+          <div className="mb-6">
+              <div className="px-4 py-2 text-[10px] font-bold text-white/50 uppercase tracking-wider mb-2">Workspace</div>
+              <div className="space-y-1">
+                  <button 
+                      onClick={() => { onNewChat('copilot'); }}
+                      className="w-full text-left px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-sm text-white transition-all flex items-center gap-4 group shadow-sm border border-white/10"
+                      title="Unified engineering workspace for design, sourcing, and AI assistance."
+                  >
+                      <div className="w-10 h-10 rounded-2xl bg-brand-orange text-white flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                          <Cpu size={20} />
+                      </div>
+                      <div className="flex-1">
+                          <div className="font-bold text-white">Engineering Suite</div>
+                          <div className="text-[10px] text-white/50 uppercase tracking-wider font-bold">Design • Source • AI</div>
+                      </div>
+                  </button>
+              </div>
           </div>
 
         </div>

@@ -1,52 +1,97 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { DocumentData } from '../../types';
-import { FileText, Download, Printer } from 'lucide-react';
+import { FileText, Download, Printer, Loader2 } from 'lucide-react';
+import html2pdf from 'html2pdf.js';
 
 interface DocumentViewProps {
   data: DocumentData;
 }
 
 export const DocumentView: React.FC<DocumentViewProps> = ({ data }) => {
+  const documentRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadPDF = async () => {
+    if (!documentRef.current || isDownloading) return;
+    
+    setIsDownloading(true);
+    
+    try {
+      const element = documentRef.current;
+      const opt = {
+        margin:       10,
+        filename:     `${data.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
+        image:        { type: 'jpeg' as const, quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
+      };
+
+      await html2pdf().set(opt).from(element).save();
+    } catch (error) {
+      console.error('Failed to generate PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <div className="flex flex-col h-full bg-brand-gray/30">
+    <div className="flex flex-col h-full bg-white">
        {/* Toolbar */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-brand-darkBlue/5 bg-white shadow-sm z-10">
-         <div className="flex items-center gap-2.5 text-brand-darkBlue">
-            <FileText size={18} className="text-brand-blue" />
-            <span className="font-semibold text-sm tracking-wide">Engineering Doc</span>
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+         <div className="flex items-center gap-2 text-brand-darkBlue">
+            <FileText size={18} className="text-brand-darkBlue" />
+            <span className="font-bold text-sm">Engineering Doc</span>
          </div>
          <div className="flex gap-2">
-            <button className="p-2 hover:bg-brand-gray rounded-lg text-gray-500 hover:text-brand-blue transition-colors" title="Print"><Printer size={18} /></button>
-            <button className="p-2 hover:bg-brand-gray rounded-lg text-gray-500 hover:text-brand-blue transition-colors" title="Download PDF"><Download size={18} /></button>
+            <button 
+              onClick={handlePrint}
+              className="p-2 hover:bg-gray-100 rounded text-gray-500 hover:text-brand-darkBlue transition-colors" 
+              title="Print"
+            >
+              <Printer size={16} />
+            </button>
+            <button 
+              onClick={handleDownloadPDF}
+              disabled={isDownloading}
+              className={`p-2 rounded transition-colors flex items-center justify-center ${isDownloading ? 'text-brand-blue bg-brand-lightBlue' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-darkBlue'}`} 
+              title="Download PDF"
+            >
+              {isDownloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+            </button>
          </div>
       </div>
 
       {/* Document Content */}
-      <div className="flex-1 overflow-auto custom-scrollbar p-6 md:p-12">
-        <div className="max-w-3xl mx-auto bg-white shadow-float rounded-2xl border border-brand-darkBlue/5 min-h-[800px] p-10 md:p-16">
-            <div className="border-b-2 border-brand-blue/20 pb-6 mb-10">
-                <h1 className="font-serif text-4xl font-semibold text-brand-darkBlue leading-tight tracking-tight">{data.title}</h1>
-                <div className="mt-6 flex justify-between text-[11px] font-mono text-gray-400 uppercase tracking-widest">
+      <div className="flex-1 overflow-auto custom-scrollbar bg-white p-8">
+        <div ref={documentRef} className="max-w-2xl mx-auto bg-white shadow-sm border border-gray-200 min-h-[800px] p-12">
+            <div className="border-b-2 border-brand-darkBlue pb-4 mb-8">
+                <h1 className="font-serif text-3xl font-bold text-brand-darkBlue leading-tight">{data.title}</h1>
+                <div className="mt-4 flex justify-between text-xs font-mono text-gray-500 uppercase tracking-widest">
                     <span>Buildables Auto-Gen</span>
                     <span>{new Date().toLocaleDateString()}</span>
                 </div>
             </div>
 
-            <div className="space-y-10 font-serif text-gray-700 leading-relaxed text-lg">
+            <div className="space-y-8 font-serif text-gray-800 leading-relaxed">
                 {data.sections.map((section, idx) => (
                     <div key={idx}>
-                        <h2 className="font-sans text-sm font-bold uppercase tracking-widest text-brand-blue mb-4">{section.heading}</h2>
-                        <div className="prose prose-stone max-w-none text-base whitespace-pre-wrap">
+                        <h2 className="font-sans text-sm font-bold uppercase tracking-wide text-brand-darkBlue mb-3">{section.heading}</h2>
+                        <div className="prose prose-stone text-sm whitespace-pre-wrap">
                             {section.body}
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div className="mt-20 pt-10 border-t border-brand-darkBlue/5 text-center">
-                 <p className="text-xs text-gray-400 font-sans tracking-wide">
+            <div className="mt-16 pt-8 border-t border-gray-100 text-center">
+                 <p className="text-[10px] text-gray-400 font-sans">
                     Generated by Buildables v3 Engineering Copilot. 
-                    <br/><span className="text-amber-600/70">Review required before manufacturing release.</span>
+                    <br/>Review required before manufacturing release.
                  </p>
             </div>
         </div>
